@@ -15,6 +15,8 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.Optional;
+
 public class HelloApplication extends Application {
 
     public static void main(String[] args) {
@@ -25,7 +27,7 @@ public class HelloApplication extends Application {
     public void start(Stage primaryStage) {
         // Pokrećemo login stranicu
         primaryStage.setScene(createLoginScene(primaryStage));
-        primaryStage.setTitle("RafBook Login");
+        primaryStage.setTitle("RafBook");
         primaryStage.show();
     }
 
@@ -50,7 +52,7 @@ public class HelloApplication extends Application {
         PasswordField passwordField = new PasswordField();
         passwordField.setStyle("-fx-pref-width: 300px;-fx-border-radius:20px;");
 
-        // Dugme za login
+
         Button loginButton = new Button("Login");
         loginButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:15px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         loginButton.setOnMouseEntered(e -> {
@@ -85,24 +87,43 @@ public class HelloApplication extends Application {
         return new Scene(loginLayout, 500, 500);
     }
 
-    // Metoda koja se poziva kad korisnik uspešno loginuje
+
     private void goToNextPage(Stage primaryStage) {
-        // Tabela
+        // Kreiranje TabPane-a
+        TabPane tabPane = new TabPane();
+
+
+        Tab firstTab = new Tab("Korisnici");
+        firstTab.setClosable(false);
+        firstTab.setContent(createClientTabContent());
+
+
+        Tab secondTab = new Tab("Kanali");
+        secondTab.setClosable(false);
+        secondTab.setContent(createChannelTabContent());
+
+
+        tabPane.getTabs().addAll(firstTab, secondTab);
+
+        // Postavljanje scene
+        Scene scene = new Scene(tabPane, 800, 600);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Tabbed Interface");
+        primaryStage.show();
+    }
+
+
+    private VBox createClientTabContent() {
         TableView<Person> table = new TableView<>();
-
-
         ObservableList<Person> data = FXCollections.observableArrayList(
-                new Person("Marko", "Marković", "marko@mail.com"),
-                new Person("Jovana", "Jovanović", "jovana@mail.com"),
-                new Person("Nikola", "Nikolić", "nikola@mail.com")
+                new Person("Ivana", "Jankovic", "ivanajankovic1302@gmail.com")
+
         );
 
         FilteredList<Person> filteredData = new FilteredList<>(data, p -> true);
 
-        // Kolone tabele
         TableColumn<Person, String> firstNameColumn = new TableColumn<>("Ime");
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-
 
         TableColumn<Person, String> lastNameColumn = new TableColumn<>("Prezime");
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
@@ -110,18 +131,15 @@ public class HelloApplication extends Application {
         TableColumn<Person, String> emailColumn = new TableColumn<>("Email");
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-
-        //Dodavanje kolona
         table.getColumns().addAll(firstNameColumn, lastNameColumn, emailColumn);
         table.setItems(filteredData);
 
-        // Polje za pretragu
         TextField searchField = new TextField();
         searchField.setPromptText("Pretraži klijente...");
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(person -> {
                 if (newValue == null || newValue.isEmpty()) {
-                    return true; // Prikazujemo sve ako nema unosa
+                    return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
                 return person.getFirstName().toLowerCase().contains(lowerCaseFilter) ||
@@ -130,10 +148,8 @@ public class HelloApplication extends Application {
             });
         });
 
-        //Unos novog korisnika
         TextField firstNameField = new TextField();
         firstNameField.setPromptText("Ime");
-
 
         TextField lastNameField = new TextField();
         lastNameField.setPromptText("Prezime");
@@ -141,7 +157,6 @@ public class HelloApplication extends Application {
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
 
-        // Dugme za dodavanje korisnika
         Button addButton = new Button("Dodaj");
         addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         addButton.setOnMouseEntered(e -> {
@@ -158,36 +173,35 @@ public class HelloApplication extends Application {
             String email = emailField.getText();
 
             if (!firstName.isEmpty() && !lastName.isEmpty() && !email.isEmpty()) {
-                // Kreiraj potvrdu
+
                 Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmationAlert.setTitle("Potvrda");
-                confirmationAlert.setHeaderText("Da li ste sigurni da želite da dodate korisnika?");
+                confirmationAlert.setTitle("Potvrda dodavanja");
+                confirmationAlert.setHeaderText("Da li ste sigurni da želite da dodate novog korisnika?");
                 confirmationAlert.setContentText("Korisnik: " + firstName + " " + lastName);
 
                 // Ako korisnik klikne OK
                 confirmationAlert.showAndWait().ifPresent(response -> {
                     if (response == ButtonType.OK) {
-                        // Dodaj korisnika u listu
+                        // Dodavanje korisnika u listu
                         data.add(new Person(firstName, lastName, email));
                         firstNameField.clear();
                         lastNameField.clear();
                         emailField.clear();
                     } else {
-                        //Korisnik otkazao
+                        // Otkazivanje dodavanja
                         Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION);
-                        cancelAlert.setTitle("Otkazano");
-                        cancelAlert.setHeaderText("Dodavanje je otkazano.");
+                        cancelAlert.setTitle("Dodavanje otkazano");
+                        cancelAlert.setHeaderText("Korisnik nije dodat.");
                         cancelAlert.show();
                     }
                 });
             } else {
+                // Ako polja nisu popunjena, prikazuje se upozorenje
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Sva polja moraju biti popunjena!");
                 alert.show();
             }
         });
 
-
-        // Dugme za brisanje korisnika
         Button deleteButton = new Button("Obriši");
         deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         deleteButton.setOnMouseEntered(e -> {
@@ -269,25 +283,192 @@ public class HelloApplication extends Application {
             }
         });
 
-        // Layout za pretragu, polja i dugmad
         Image image2=new Image(getClass().getResource("/images/raf3.png").toExternalForm());
         ImageView image3=new ImageView(image2);
         image3.setFitWidth(200);  // Postavljanje širine slike
         image3.setPreserveRatio(true);
-        HBox searchLayout = new HBox(10, new Label("Pretraga:"), searchField);
-        HBox inputLayout = new HBox(10, firstNameField, lastNameField, emailField, addButton, deleteButton, editButton);
-        VBox vbox = new VBox(10, searchLayout, table, inputLayout,image3);
-        vbox.setStyle("-fx-background-color:white");
 
-        Scene tableScene = new Scene(vbox, 600, 400);
-
-        // Postavljamo novu scenu
-        primaryStage.setScene(tableScene);
-        primaryStage.setTitle("Data");
-
+        HBox inputLayout = new HBox(10, firstNameField, lastNameField, emailField, addButton,editButton,deleteButton);
+        VBox vbox = new VBox(10, new Label("Pretraga:"), searchField, table, inputLayout,image3);
+        vbox.setStyle("-fx-background-color:white;");
+        return vbox;
     }
 
-    // Klasa koja predstavlja podatke za tabelu
+
+    private VBox createChannelTabContent() {
+        TableView<Channel> table = new TableView<>();
+
+
+        TableColumn<Channel, String> nameColumn = new TableColumn<>("Naziv");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Channel, String> descriptionColumn = new TableColumn<>("Opis");
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+
+        table.getColumns().addAll(nameColumn, descriptionColumn);
+
+        ObservableList<Channel> data = FXCollections.observableArrayList(
+                new Channel("General", "Opšti kanal za diskusiju"),
+                new Channel("Announcements", "Kanal za objave")
+
+        );
+        table.setItems(data);
+
+        FilteredList<Channel> filteredData = new FilteredList<>(data, p -> true);
+        table.setItems(filteredData);
+
+        Label pretraga=new Label("Pretraga:");
+
+
+        TextField searchField = new TextField();
+        searchField.setPromptText("Pretraži kanale...");
+
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredData.setPredicate(channel -> {
+                // Ako je polje za pretragu prazno, prikazujemo sve
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+
+                return channel.getName().toLowerCase().contains(lowerCaseFilter)
+                        || channel.getDescription().toLowerCase().contains(lowerCaseFilter);
+            });
+        });
+
+
+        TextField nameField = new TextField();
+        nameField.setPromptText("Naziv");
+
+        TextField descriptionField = new TextField();
+        descriptionField.setPromptText("Opis");
+
+        Button addButton = new Button("Dodaj");
+        addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        addButton.setOnMouseEntered(e -> {
+            addButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+
+
+        addButton.setOnMouseExited(e -> {
+            addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+        addButton.setOnAction(e -> {
+            String name = nameField.getText();
+            String description = descriptionField.getText();
+            if (!name.isEmpty() && !description.isEmpty()) {
+                // Kreiraj prozor za potvrdu
+                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Da li ste sigurni da želite da dodate kanal?");
+                confirmationAlert.setHeaderText("Potvrda dodavanja");
+                confirmationAlert.setTitle("Potvrda");
+
+
+                Optional<ButtonType> result = confirmationAlert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    data.add(new Channel(name, description));
+                    nameField.clear();
+                    descriptionField.clear();
+                }
+            } else {
+
+                Alert warningAlert = new Alert(Alert.AlertType.WARNING, "Sva polja moraju biti popunjena!");
+                warningAlert.setHeaderText("Upozorenje");
+                warningAlert.setTitle("Greška");
+                warningAlert.show();
+            }
+        });
+
+        Button deleteButton = new Button("Obriši");
+        deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        deleteButton.setOnMouseEntered(e -> {
+            deleteButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+
+
+        deleteButton.setOnMouseExited(e -> {
+            deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+
+        deleteButton.setOnAction(e -> {
+            Channel selectedChannel = table.getSelectionModel().getSelectedItem();
+            if (selectedChannel != null) {
+                // Potvrda brisanja
+                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationAlert.setTitle("Potvrda brisanja");
+                confirmationAlert.setHeaderText("Da li ste sigurni da želite da obrišete kanal?");
+                confirmationAlert.setContentText("Kanal: " + selectedChannel.getName());
+
+                confirmationAlert.showAndWait().ifPresent(response -> {
+                    if (response == ButtonType.OK) {
+                        data.remove(selectedChannel);
+                    }
+                });
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Morate odabrati kanal za brisanje!");
+                alert.show();
+            }
+        });
+
+        // Dugme za izmenu
+        Button editButton = new Button("Izmeni");
+        editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        editButton.setOnMouseEntered(e -> {
+            editButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+
+
+        editButton.setOnMouseExited(e -> {
+            editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+        editButton.setOnAction(e -> {
+            Channel selectedChannel = table.getSelectionModel().getSelectedItem();
+            if (selectedChannel != null) {
+                // Unos novih vrednosti
+                String newName = nameField.getText();
+                String newDescription = descriptionField.getText();
+
+                if (!newName.isEmpty() && !newDescription.isEmpty()) {
+                    // Potvrda izmene
+                    Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmationAlert.setTitle("Potvrda izmene");
+                    confirmationAlert.setHeaderText("Da li ste sigurni da želite da izmenite kanal?");
+                    confirmationAlert.setContentText("Kanal: " + selectedChannel.getName());
+
+                    confirmationAlert.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            selectedChannel.setname(newName);
+                            selectedChannel.setdescription(newDescription);
+                            table.refresh(); // Osvježavanje prikaza tabele
+                            nameField.clear();
+                            descriptionField.clear();
+                        }
+                    });
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "Sva polja moraju biti popunjena za izmenu!");
+                    alert.show();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Morate odabrati kanal za izmenu!");
+                alert.show();
+            }
+        });
+        Image image4=new Image(getClass().getResource("/images/raf3.png").toExternalForm());
+        ImageView image5=new ImageView(image4);
+        image5.setFitWidth(200);  // Postavljanje širine slike
+        image5.setPreserveRatio(true);
+
+
+
+        HBox inputLayout = new HBox(10, nameField, descriptionField, addButton,editButton,deleteButton);
+        VBox vbox = new VBox(10,pretraga,searchField, table, inputLayout,image5);
+        vbox.setStyle("-fx-background-color:white");
+        return vbox;
+    }
+
+
     public static class Person {
         private String firstName;
         private String lastName;
@@ -322,5 +503,26 @@ public class HelloApplication extends Application {
         public void setEmail(String email) {
             this.email = email;
         }
+    }
+    public static class Channel{
+        private String name;
+        private String description;
+        public Channel(String name,String description){
+            this.name=name;
+            this.description=description;
+        }
+        public String getName(){
+            return name;
+        }
+        public String getDescription(){
+            return description;
+        }
+        public void setname(String name){
+            this.name=name;
+        }
+        public void setdescription(String description){
+            this.description=description;
+        }
+
     }
 }
