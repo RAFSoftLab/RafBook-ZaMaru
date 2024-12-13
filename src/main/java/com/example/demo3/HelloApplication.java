@@ -15,9 +15,21 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.IOException;
+import java.nio.channels.Channel;
+import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo3.ApiChannel.getChannels;
+import static com.example.demo3.ApiChannelAdd.addChannelById;
+import static com.example.demo3.ApiClientAddUser.addUser;
+import static com.example.demo3.ApiClientDeleteUser.deleteUserById;
+import static com.example.demo3.ApiClientUpdateUser.updateUserById;
+import static com.example.demo3.ApiClientUser.getUsers;
+
 public class HelloApplication extends Application {
+
+
 
     public static void main(String[] args) {
         launch(args);
@@ -27,7 +39,7 @@ public class HelloApplication extends Application {
     public void start(Stage primaryStage) {
         // Pokrećemo login stranicu
         primaryStage.setScene(createLoginScene(primaryStage));
-        primaryStage.setTitle("RafBook");
+        primaryStage.setTitle("RafBook Login");
         primaryStage.show();
     }
 
@@ -108,19 +120,16 @@ public class HelloApplication extends Application {
         // Postavljanje scene
         Scene scene = new Scene(tabPane, 800, 600);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Tabbed Interface");
+        primaryStage.setTitle("RafBook");
         primaryStage.show();
     }
 
 
     private VBox createClientTabContent() {
         TableView<Person> table = new TableView<>();
-        ObservableList<Person> data = FXCollections.observableArrayList(
-                new Person("Ivana", "Jankovic", "ivanajankovic1302@gmail.com")
 
-        );
-
-        FilteredList<Person> filteredData = new FilteredList<>(data, p -> true);
+        TableColumn<Person, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 
         TableColumn<Person, String> firstNameColumn = new TableColumn<>("Ime");
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
@@ -131,12 +140,24 @@ public class HelloApplication extends Application {
         TableColumn<Person, String> emailColumn = new TableColumn<>("Email");
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        table.getColumns().addAll(firstNameColumn, lastNameColumn, emailColumn);
-        table.setItems(filteredData);
+        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, emailColumn);
+        try {
+
+            List<Person> users = getUsers();
+
+
+            ObservableList<Person> userData = FXCollections.observableArrayList(users);
+            table.setItems(userData);
+        } catch (IOException e) {
+            e.printStackTrace(); // Obrada greške
+
+        }
+
+
 
         TextField searchField = new TextField();
         searchField.setPromptText("Pretraži klijente...");
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+        /*searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(person -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
@@ -146,7 +167,7 @@ public class HelloApplication extends Application {
                         person.getLastName().toLowerCase().contains(lowerCaseFilter) ||
                         person.getEmail().toLowerCase().contains(lowerCaseFilter);
             });
-        });
+        });*/
 
         TextField firstNameField = new TextField();
         firstNameField.setPromptText("Ime");
@@ -168,40 +189,36 @@ public class HelloApplication extends Application {
             addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
         addButton.setOnAction(e -> {
+            // Prikupljamo podatke iz TextField polja
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
             String email = emailField.getText();
 
-            if (!firstName.isEmpty() && !lastName.isEmpty() && !email.isEmpty()) {
+            // Kreiraj objekat sa prikupljenim podacima (npr. Person objekat)
+            Person newPerson = new Person(firstName, lastName, email);
 
-                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmationAlert.setTitle("Potvrda dodavanja");
-                confirmationAlert.setHeaderText("Da li ste sigurni da želite da dodate novog korisnika?");
-                confirmationAlert.setContentText("Korisnik: " + firstName + " " + lastName);
+            // Pozovi metodu addChannelById sa odgovarajućim ID-em i novim podacima
+            try {
+                // Zameni "channelId" sa stvarnim ID-em koji trebaš koristiti
+                int channelId = 1; // Primer ID-a
+                boolean success = addUser(channelId, newPerson);
 
-                // Ako korisnik klikne OK
-                confirmationAlert.showAndWait().ifPresent(response -> {
-                    if (response == ButtonType.OK) {
-                        // Dodavanje korisnika u listu
-                        data.add(new Person(firstName, lastName, email));
-                        firstNameField.clear();
-                        lastNameField.clear();
-                        emailField.clear();
-                    } else {
-                        // Otkazivanje dodavanja
-                        Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION);
-                        cancelAlert.setTitle("Dodavanje otkazano");
-                        cancelAlert.setHeaderText("Korisnik nije dodat.");
-                        cancelAlert.show();
-                    }
-                });
-            } else {
-                // Ako polja nisu popunjena, prikazuje se upozorenje
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Sva polja moraju biti popunjena!");
-                alert.show();
+                // Proveri da li je operacija bila uspešna
+                if (success) {
+                    // Ako je uspešno, dodaj podatke u tabelu
+                    table.getItems().add(newPerson);
+                    // Očisti polja nakon dodavanja
+                    firstNameField.clear();
+                    lastNameField.clear();
+                    emailField.clear();
+                } else {
+                    // Ako dodavanje nije uspelo, prikaži poruku o grešci
+                    System.out.println("Error adding the person.");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
-
         Button deleteButton = new Button("Obriši");
         deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         deleteButton.setOnMouseEntered(e -> {
@@ -212,36 +229,34 @@ public class HelloApplication extends Application {
         deleteButton.setOnMouseExited(e -> {
             deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
-        deleteButton.setOnAction(e -> {
-            Person selectedPerson = table.getSelectionModel().getSelectedItem();
-            if (selectedPerson != null) {
-                // Kreiranje potvrde
-                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmationAlert.setTitle("Potvrda");
-                confirmationAlert.setHeaderText("Da li ste sigurni da želite da obrišete korisnika?");
-                confirmationAlert.setContentText("Korisnik: " + selectedPerson.getFirstName() + " " + selectedPerson.getLastName());
 
-                // Ako korisnik klikne OK
-                confirmationAlert.showAndWait().ifPresent(response -> {
-                    if (response == ButtonType.OK) {
-                        // Brisanje korisnika
-                        data.remove(selectedPerson);
+        deleteButton.setOnAction(e -> {
+            // Dobijanje selektovanog korisnika iz tabele
+            Person selectedPerson = table.getSelectionModel().getSelectedItem();
+
+            if (selectedPerson != null) {
+                // Potvrda za brisanje (opcionalno)
+                System.out.println("Brisanje korisnika: " + selectedPerson.getFirstName());
+
+                try {
+                    boolean success = deleteUserById(selectedPerson.getId());
+
+                    if (success) {
+                        table.getItems().remove(selectedPerson);
+                        System.out.println("Korisnik uspešno obrisan.");
                     } else {
-                        //Korisnik otkazao
-                        Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION);
-                        cancelAlert.setTitle("Otkazano");
-                        cancelAlert.setHeaderText("Brisanje je otkazano.");
-                        cancelAlert.show();
+                        System.out.println("Greška pri brisanju korisnika.");
                     }
-                });
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Morate odabrati korisnika za brisanje!");
-                alert.show();
+                System.out.println("Nijedan korisnik nije selektovan.");
             }
         });
 
 
-        // Dugme za izmenu korisnika
+
         Button editButton = new Button("Izmeni");
         editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         editButton.setOnMouseEntered(e -> {
@@ -252,34 +267,24 @@ public class HelloApplication extends Application {
         editButton.setOnMouseExited(e -> {
             editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
-        editButton.setOnAction(e -> {
+        editButton.setOnAction(event -> {
             Person selectedPerson = table.getSelectionModel().getSelectedItem();
             if (selectedPerson != null) {
-                // Kreiraj potvrdu
-                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmationAlert.setTitle("Potvrda");
-                confirmationAlert.setHeaderText("Da li ste sigurni da želite da izmenite korisnika?");
-                confirmationAlert.setContentText("Korisnik: " + selectedPerson.getFirstName() + " " + selectedPerson.getLastName());
+                try {
+                    // Ažuriranje podataka iz TextField-a
+                    selectedPerson.setFirstName(firstNameField.getText());
+                    selectedPerson.setLastName(lastNameField.getText());
+                    selectedPerson.setEmail(emailField.getText());
 
-                // Ako korisnik klikne OK
-                confirmationAlert.showAndWait().ifPresent(response -> {
-                    if (response == ButtonType.OK) {
-                        // Izmena korisnika
-                        selectedPerson.setFirstName(firstNameField.getText());
-                        selectedPerson.setLastName(lastNameField.getText());
-                        selectedPerson.setEmail(emailField.getText());
-                        table.refresh(); // Osvježavanje prikaza tabele
-                    } else {
-                        //Otkazivanje
-                        Alert cancelAlert = new Alert(Alert.AlertType.INFORMATION);
-                        cancelAlert.setTitle("Otkazano");
-                        cancelAlert.setHeaderText("Izmena je otkazana.");
-                        cancelAlert.show();
+                    // Slanje PUT zahteva
+                    boolean success = updateUserById(selectedPerson.getId(), selectedPerson);
+                    if (success) {
+                        // Osvježavanje tabele
+                        table.refresh();
                     }
-                });
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Morate odabrati korisnika za izmenu!");
-                alert.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -289,7 +294,7 @@ public class HelloApplication extends Application {
         image3.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10, firstNameField, lastNameField, emailField, addButton,editButton,deleteButton);
-        VBox vbox = new VBox(10, new Label("Pretraga:"), searchField, table, inputLayout,image3);
+        VBox vbox = new VBox(10, new Label("Pretraga:"),searchField, table, inputLayout,image3);
         vbox.setStyle("-fx-background-color:white;");
         return vbox;
     }
@@ -299,44 +304,43 @@ public class HelloApplication extends Application {
         TableView<Channel> table = new TableView<>();
 
 
+        TableColumn<Channel, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+
         TableColumn<Channel, String> nameColumn = new TableColumn<>("Naziv");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
 
         TableColumn<Channel, String> descriptionColumn = new TableColumn<>("Opis");
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
 
+        table.getColumns().addAll(idColumn, nameColumn, descriptionColumn);
+        try{
+            List<Channel> channels = getChannels();
 
-        table.getColumns().addAll(nameColumn, descriptionColumn);
+            ObservableList<HelloApplication.Channel> channelData = FXCollections.observableArrayList(channels);
+            table.setItems(channelData);
+        }catch (IOException e) {
+            e.printStackTrace(); // Obrada greške
 
-        ObservableList<Channel> data = FXCollections.observableArrayList(
-                new Channel("General", "Opšti kanal za diskusiju"),
-                new Channel("Announcements", "Kanal za objave")
+        }
 
-        );
-        table.setItems(data);
-
-        FilteredList<Channel> filteredData = new FilteredList<>(data, p -> true);
-        table.setItems(filteredData);
-
-        Label pretraga=new Label("Pretraga:");
-
+        Label pretraga = new Label("Pretraga:");
 
         TextField searchField = new TextField();
         searchField.setPromptText("Pretraži kanale...");
 
-
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+        /*searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(channel -> {
-                // Ako je polje za pretragu prazno, prikazujemo sve
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-
-                return channel.getName().toLowerCase().contains(lowerCaseFilter)
-                        || channel.getDescription().toLowerCase().contains(lowerCaseFilter);
+                return channel.getName().toLowerCase().contains(lowerCaseFilter) ||
+                        channel.getDescription().toLowerCase().contains(lowerCaseFilter);
             });
-        });
+        });*/
 
 
         TextField nameField = new TextField();
@@ -351,34 +355,39 @@ public class HelloApplication extends Application {
             addButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
         });
 
+        addButton.setOnAction(e -> {
+            // Prikupljamo podatke iz TextField polja
+            String name = nameField.getText();
+            String description = descriptionField.getText();
+
+            // Kreiraj objekat sa prikupljenim podacima (npr. Channel objekat)
+            Channel newChannel = new Channel(name, description);
+
+            // Pozovi metodu addChannelById sa odgovarajućim ID-em i novim podacima
+            try {
+                // Zameni "channelId" sa stvarnim ID-em koji trebaš koristiti
+                int channelId = 1; // Primer ID-a
+                boolean success = addChannelById(channelId, newChannel);
+
+                // Proveri da li je operacija bila uspešna
+                if (success) {
+                    // Ako je uspešno, dodaj podatke u tabelu
+                    table.getItems().add(newChannel);
+                    // Očisti polja nakon dodavanja
+                    nameField.clear();
+                    descriptionField.clear();
+                } else {
+                    // Ako dodavanje nije uspelo, prikaži poruku o grešci
+                    System.out.println("Error adding the channel.");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
 
         addButton.setOnMouseExited(e -> {
             addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
-        });
-        addButton.setOnAction(e -> {
-            String name = nameField.getText();
-            String description = descriptionField.getText();
-            if (!name.isEmpty() && !description.isEmpty()) {
-                // Kreiraj prozor za potvrdu
-                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Da li ste sigurni da želite da dodate kanal?");
-                confirmationAlert.setHeaderText("Potvrda dodavanja");
-                confirmationAlert.setTitle("Potvrda");
-
-
-                Optional<ButtonType> result = confirmationAlert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    data.add(new Channel(name, description));
-                    nameField.clear();
-                    descriptionField.clear();
-                }
-            } else {
-
-                Alert warningAlert = new Alert(Alert.AlertType.WARNING, "Sva polja moraju biti popunjena!");
-                warningAlert.setHeaderText("Upozorenje");
-                warningAlert.setTitle("Greška");
-                warningAlert.show();
-            }
         });
 
         Button deleteButton = new Button("Obriši");
@@ -387,15 +396,13 @@ public class HelloApplication extends Application {
             deleteButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
         });
 
-
         deleteButton.setOnMouseExited(e -> {
             deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
 
-        deleteButton.setOnAction(e -> {
+        /*deleteButton.setOnAction(e -> {
             Channel selectedChannel = table.getSelectionModel().getSelectedItem();
             if (selectedChannel != null) {
-                // Potvrda brisanja
                 Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmationAlert.setTitle("Potvrda brisanja");
                 confirmationAlert.setHeaderText("Da li ste sigurni da želite da obrišete kanal?");
@@ -410,28 +417,25 @@ public class HelloApplication extends Application {
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Morate odabrati kanal za brisanje!");
                 alert.show();
             }
-        });
+        });*/
 
-        // Dugme za izmenu
         Button editButton = new Button("Izmeni");
         editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         editButton.setOnMouseEntered(e -> {
             editButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
         });
 
-
         editButton.setOnMouseExited(e -> {
             editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
+
         editButton.setOnAction(e -> {
             Channel selectedChannel = table.getSelectionModel().getSelectedItem();
             if (selectedChannel != null) {
-                // Unos novih vrednosti
                 String newName = nameField.getText();
                 String newDescription = descriptionField.getText();
 
                 if (!newName.isEmpty() && !newDescription.isEmpty()) {
-                    // Potvrda izmene
                     Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
                     confirmationAlert.setTitle("Potvrda izmene");
                     confirmationAlert.setHeaderText("Da li ste sigurni da želite da izmenite kanal?");
@@ -439,9 +443,9 @@ public class HelloApplication extends Application {
 
                     confirmationAlert.showAndWait().ifPresent(response -> {
                         if (response == ButtonType.OK) {
-                            selectedChannel.setname(newName);
-                            selectedChannel.setdescription(newDescription);
-                            table.refresh(); // Osvježavanje prikaza tabele
+                            selectedChannel.setName(newName);
+                            selectedChannel.setDescription(newDescription);
+                            table.refresh();
                             nameField.clear();
                             descriptionField.clear();
                         }
@@ -455,21 +459,22 @@ public class HelloApplication extends Application {
                 alert.show();
             }
         });
-        Image image4=new Image(getClass().getResource("/images/raf3.png").toExternalForm());
-        ImageView image5=new ImageView(image4);
-        image5.setFitWidth(200);  // Postavljanje širine slike
+
+        Image image4 = new Image(getClass().getResource("/images/raf3.png").toExternalForm());
+        ImageView image5 = new ImageView(image4);
+        image5.setFitWidth(200);
         image5.setPreserveRatio(true);
 
-
-
-        HBox inputLayout = new HBox(10, nameField, descriptionField, addButton,editButton,deleteButton);
-        VBox vbox = new VBox(10,pretraga,searchField, table, inputLayout,image5);
+        HBox inputLayout = new HBox(10,nameField, descriptionField, addButton, editButton, deleteButton);
+        VBox vbox = new VBox(10, pretraga, searchField, table, inputLayout, image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;
     }
 
 
+
     public static class Person {
+        private int id;
         private String firstName;
         private String lastName;
         private String email;
@@ -479,6 +484,12 @@ public class HelloApplication extends Application {
             this.lastName = lastName;
             this.email = email;
         }
+
+        // Getter i setter za ID
+        public int getId() {
+            return id;
+        }
+
 
         public String getFirstName() {
             return firstName;
@@ -504,25 +515,40 @@ public class HelloApplication extends Application {
             this.email = email;
         }
     }
-    public static class Channel{
+
+    public static class Channel {
+        private int id;
         private String name;
         private String description;
-        public Channel(String name,String description){
-            this.name=name;
-            this.description=description;
-        }
-        public String getName(){
-            return name;
-        }
-        public String getDescription(){
-            return description;
-        }
-        public void setname(String name){
-            this.name=name;
-        }
-        public void setdescription(String description){
-            this.description=description;
+
+        public Channel(String name, String description) {
+
+            this.name = name;
+            this.description = description;
         }
 
+
+        public int getId() {
+            return id;
+        }
+
+
+
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
     }
 }
