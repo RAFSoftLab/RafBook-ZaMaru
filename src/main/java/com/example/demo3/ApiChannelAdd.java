@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class ApiChannelAdd {
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String BASE_URL = "http://localhost:8080/text-channel"; // Endpoint za kanale
+    private static final String BASE_URL = "http://192.168.124.28:8080/text-channel"; // Endpoint za kanale
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     // Metoda za dodavanje kanala po ID-u

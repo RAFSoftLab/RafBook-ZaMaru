@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ApiClientDeleteUser {
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String BASE_URL = "http://localhost:8080/user"; // Endpoint za korisnike
+    private static final String BASE_URL = "http://192.168.124.28:8080/api/user"; // Endpoint za korisnike
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     // Metoda za brisanje korisnika po ID-u

@@ -7,12 +7,14 @@ import java.util.List;
 
 public class ApiClientUser {
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String BASE_URL = "http://localhost:8080/users"; // Endpoint za korisnike
+    private static final String BASE_URL = "http://192.168.124.28:8080/api/users";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static List<HelloApplication.Person> getUsers() throws IOException {
+
         Request request = new Request.Builder()
                 .url(BASE_URL)
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {

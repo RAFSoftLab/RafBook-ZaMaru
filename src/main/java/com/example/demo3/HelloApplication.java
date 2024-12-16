@@ -2,9 +2,7 @@ package com.example.demo3;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,11 +12,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import java.io.IOException;
-import java.nio.channels.Channel;
 import java.util.List;
-import java.util.Optional;
+
 
 import static com.example.demo3.ApiChannel.getChannels;
 import static com.example.demo3.ApiChannelAdd.addChannelById;
@@ -76,15 +72,32 @@ public class HelloApplication extends Application {
             loginButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:15px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
         loginButton.setOnAction(e -> {
-            // Provera
-            if (usernameField.getText().equalsIgnoreCase("admin") && passwordField.getText().equals("password")) {
-                // Ako su podaci tačni, prešli smo na sledeću stranicu
-                goToNextPage(primaryStage);
-            } else {
-                //Ako korisnik nije admin ili je losa lozinka prikazi upozorenje
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Pogrešno korisničko ime ili lozinka.");
-                alert.show();
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+
+
+            try {
+
+                String token = AuthClient.authenticate(username, password);
+
+
+                if (token != null) {
+
+                    goToNextPage(primaryStage);
+                } else {
+
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Pogrešno korisničko ime ili lozinka");
+                    alert.show();
+                }
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                // Takođe, možeš obraditi greške u slučaju problema sa mrežom
             }
+
+
+
+
         });
 
         HBox usernameLayout = new HBox(10, labela, usernameField);
@@ -157,8 +170,9 @@ public class HelloApplication extends Application {
 
         TextField searchField = new TextField();
         searchField.setPromptText("Pretraži klijente...");
+
         /*searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(person -> {
+            userData.setPredicate(person -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
@@ -290,7 +304,7 @@ public class HelloApplication extends Application {
 
         Image image2=new Image(getClass().getResource("/images/raf3.png").toExternalForm());
         ImageView image3=new ImageView(image2);
-        image3.setFitWidth(200);  // Postavljanje širine slike
+        image3.setFitWidth(200);
         image3.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10, firstNameField, lastNameField, emailField, addButton,editButton,deleteButton);
@@ -488,6 +502,10 @@ public class HelloApplication extends Application {
         // Getter i setter za ID
         public int getId() {
             return id;
+        }
+
+        public void setId(int id){
+            this.id=id;
         }
 
 
