@@ -17,6 +17,7 @@ import okhttp3.Response;
         public static List<HelloApplication.Channel> getChannels() throws IOException {
             Request request = new Request.Builder()
                     .url(BASE_URL)
+                    .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                     .build();
 
             try (Response response = client.newCall(request).execute()) {

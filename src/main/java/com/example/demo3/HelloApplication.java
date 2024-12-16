@@ -150,10 +150,16 @@ public class HelloApplication extends Application {
         TableColumn<Person, String> lastNameColumn = new TableColumn<>("Prezime");
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 
+        TableColumn<Person, String> usernameColumn = new TableColumn<>("Username");
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+
         TableColumn<Person, String> emailColumn = new TableColumn<>("Email");
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, emailColumn);
+        TableColumn<Person, String> roleColumn = new TableColumn<>("Uloga");
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+
+        table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn,usernameColumn,emailColumn,roleColumn);
         try {
 
             List<Person> users = getUsers();
@@ -162,7 +168,7 @@ public class HelloApplication extends Application {
             ObservableList<Person> userData = FXCollections.observableArrayList(users);
             table.setItems(userData);
         } catch (IOException e) {
-            e.printStackTrace(); // Obrada greške
+            e.printStackTrace();
 
         }
 
@@ -189,8 +195,16 @@ public class HelloApplication extends Application {
         TextField lastNameField = new TextField();
         lastNameField.setPromptText("Prezime");
 
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
+
+        TextField roleField = new TextField();
+        roleField.setPromptText("role");
+
+
 
         Button addButton = new Button("Dodaj");
         addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -202,37 +216,41 @@ public class HelloApplication extends Application {
         addButton.setOnMouseExited(e -> {
             addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
-        addButton.setOnAction(e -> {
+        /*addButton.setOnAction(e -> {
             // Prikupljamo podatke iz TextField polja
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
+            String username=usernameField.getText();
             String email = emailField.getText();
+            String role=roleField.getText();
 
-            // Kreiraj objekat sa prikupljenim podacima (npr. Person objekat)
-            Person newPerson = new Person(firstName, lastName, email);
 
-            // Pozovi metodu addChannelById sa odgovarajućim ID-em i novim podacima
+            Person newPerson = new Person(firstName, lastName,username,email,role);
+
+
             try {
-                // Zameni "channelId" sa stvarnim ID-em koji trebaš koristiti
-                int channelId = 1; // Primer ID-a
-                boolean success = addUser(channelId, newPerson);
 
-                // Proveri da li je operacija bila uspešna
+                int id = 1; // Primer ID-a
+                boolean success = addUser(id, newPerson);
+
+
                 if (success) {
-                    // Ako je uspešno, dodaj podatke u tabelu
+
                     table.getItems().add(newPerson);
                     // Očisti polja nakon dodavanja
                     firstNameField.clear();
                     lastNameField.clear();
+                    usernameField.clear();
                     emailField.clear();
+                    roleField.clear();
                 } else {
-                    // Ako dodavanje nije uspelo, prikaži poruku o grešci
+
                     System.out.println("Error adding the person.");
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        });
+        });*/
         Button deleteButton = new Button("Obriši");
         deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         deleteButton.setOnMouseEntered(e -> {
@@ -245,11 +263,11 @@ public class HelloApplication extends Application {
         });
 
         deleteButton.setOnAction(e -> {
-            // Dobijanje selektovanog korisnika iz tabele
+
             Person selectedPerson = table.getSelectionModel().getSelectedItem();
 
             if (selectedPerson != null) {
-                // Potvrda za brisanje (opcionalno)
+
                 System.out.println("Brisanje korisnika: " + selectedPerson.getFirstName());
 
                 try {
@@ -273,7 +291,7 @@ public class HelloApplication extends Application {
 
         Button editButton = new Button("Izmeni");
         editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
-        editButton.setOnMouseEntered(e -> {
+        /*editButton.setOnMouseEntered(e -> {
             editButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
         });
 
@@ -285,29 +303,31 @@ public class HelloApplication extends Application {
             Person selectedPerson = table.getSelectionModel().getSelectedItem();
             if (selectedPerson != null) {
                 try {
-                    // Ažuriranje podataka iz TextField-a
+
                     selectedPerson.setFirstName(firstNameField.getText());
                     selectedPerson.setLastName(lastNameField.getText());
+                    selectedPerson.setUsername(usernameField.getText());
                     selectedPerson.setEmail(emailField.getText());
+                    selectedPerson.setRole(roleField.getText());
 
-                    // Slanje PUT zahteva
+
                     boolean success = updateUserById(selectedPerson.getId(), selectedPerson);
                     if (success) {
-                        // Osvježavanje tabele
+
                         table.refresh();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        });
+        });*/
 
         Image image2=new Image(getClass().getResource("/images/raf3.png").toExternalForm());
         ImageView image3=new ImageView(image2);
         image3.setFitWidth(200);
         image3.setPreserveRatio(true);
 
-        HBox inputLayout = new HBox(10, firstNameField, lastNameField, emailField, addButton,editButton,deleteButton);
+        HBox inputLayout = new HBox(10, firstNameField, lastNameField,usernameField, emailField,roleField, addButton,editButton,deleteButton);
         VBox vbox = new VBox(10, new Label("Pretraga:"),searchField, table, inputLayout,image3);
         vbox.setStyle("-fx-background-color:white;");
         return vbox;
@@ -336,7 +356,7 @@ public class HelloApplication extends Application {
             ObservableList<HelloApplication.Channel> channelData = FXCollections.observableArrayList(channels);
             table.setItems(channelData);
         }catch (IOException e) {
-            e.printStackTrace(); // Obrada greške
+            e.printStackTrace();
 
         }
 
@@ -370,28 +390,27 @@ public class HelloApplication extends Application {
         });
 
         addButton.setOnAction(e -> {
-            // Prikupljamo podatke iz TextField polja
+
             String name = nameField.getText();
             String description = descriptionField.getText();
 
-            // Kreiraj objekat sa prikupljenim podacima (npr. Channel objekat)
+
             Channel newChannel = new Channel(name, description);
 
-            // Pozovi metodu addChannelById sa odgovarajućim ID-em i novim podacima
+
             try {
-                // Zameni "channelId" sa stvarnim ID-em koji trebaš koristiti
+
                 int channelId = 1; // Primer ID-a
                 boolean success = addChannelById(channelId, newChannel);
 
-                // Proveri da li je operacija bila uspešna
+
                 if (success) {
-                    // Ako je uspešno, dodaj podatke u tabelu
+
                     table.getItems().add(newChannel);
-                    // Očisti polja nakon dodavanja
                     nameField.clear();
                     descriptionField.clear();
                 } else {
-                    // Ako dodavanje nije uspelo, prikaži poruku o grešci
+
                     System.out.println("Error adding the channel.");
                 }
             } catch (IOException ex) {
@@ -491,15 +510,22 @@ public class HelloApplication extends Application {
         private int id;
         private String firstName;
         private String lastName;
+        private String username;
         private String email;
+        private String[] role;
 
-        public Person(String firstName, String lastName, String email) {
+
+        public Person() {};
+
+        public Person(String firstName, String lastName,String username, String email,String[] role) {
             this.firstName = firstName;
             this.lastName = lastName;
+            this.username=username;
             this.email = email;
+            this.role=role;
         }
 
-        // Getter i setter za ID
+
         public int getId() {
             return id;
         }
@@ -532,12 +558,27 @@ public class HelloApplication extends Application {
         public void setEmail(String email) {
             this.email = email;
         }
+
+        public String getUsername(){
+            return username;
+        }
+        public void setUsername(String username){
+            this.username=username;
+        }
+        public String[] getRole(){
+            return role;
+        }
+        public void setRole(String[] role){
+            this.role=role;
+        }
     }
 
     public static class Channel {
         private int id;
         private String name;
         private String description;
+
+        public Channel() {};
 
         public Channel(String name, String description) {
 
@@ -548,6 +589,10 @@ public class HelloApplication extends Application {
 
         public int getId() {
             return id;
+        }
+
+        public void setId(int id){
+            this.id=id;
         }
 
 

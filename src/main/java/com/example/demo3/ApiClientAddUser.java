@@ -23,11 +23,11 @@ public class ApiClientAddUser {
 
         Request request = new Request.Builder()
                 .url(url)
-                .post(body)  // POST metoda
+                .post(body)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            return response.isSuccessful(); // Vraća true ako je dodavanje uspešno
+            return response.isSuccessful();
         }
     }
 }
