@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.demo3.HelloController">
+  <TextField fx:id="id" promptText="ID"/>
+  <TextField fx:id="firstNameField" promptText="Ime"/>
+  <TextField fx:id="lastNameField" promptText="Prezime"/>
+  <TextField fx:id="usernameField" promptText="Username"/>
+  <TextField fx:id="emailField" promptText="Email"/>
+  <TextField fx:id="roleField" promptText="Role"/>
+
+  <Button fx:id="addButton" text="Dodaj" onAction="#addPerson"/>
+  <Button fx:id="deleteButton" text="Obriši" onAction="#deletePerson"/>
+  <Button fx:id="editButton" text="Izmeni" onAction="#editPerson"/>
+
+
+  <TableView fx:id="table">
+    <TableColumn fx:id="idColumn" text="ID"/>
+    <TableColumn fx:id="firstNameColumn" text="Ime"/>
+    <TableColumn fx:id="lastNameColumn" text="Prezime"/>
+    <TableColumn fx:id="usernameColumn" text="Username"/>
+    <TableColumn fx:id="emailColumn" text="Email"/>
+    <TableColumn fx:id="roleColumn" text="Uloga"/>
+  </TableView>
+
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+  </padding>
+
+</VBox>
+
+
+
