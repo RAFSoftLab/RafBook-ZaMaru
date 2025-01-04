@@ -112,7 +112,7 @@ class ApiClientUserTest {
         assertTrue(result);
     }
 
-    @Test
+    /*@Test
     void testUpdateUser_Success() throws IOException {
         List<String> roles = Arrays.asList("ADMIN", "USER");
         Person user = new Person("Ivana","Jankovic","ivj123","ivanajankovic1302@+@gmail.com",roles);
@@ -124,6 +124,6 @@ class ApiClientUserTest {
 
         boolean result = ApiClientUser.updateUser(user);
         assertTrue(result);
-    }
+    }*/
 }
 

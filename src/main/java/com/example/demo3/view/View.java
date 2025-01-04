@@ -31,7 +31,7 @@ import static com.example.demo3.Controller.ApiClientUser.getUsers;
 
 public class View {
     HelloController helloController = new HelloController();
-    HelloControllerChannel hellocontrollerchannel=new HelloControllerChannel();
+
 
     public Scene createLoginScene(Stage primaryStage) {
         Image logoImage = new Image(getClass().getResource("/images/raf.jpg").toExternalForm());
@@ -306,7 +306,7 @@ public class View {
 
 
     private VBox createChannelTabContent() {
-        TableView<Channel> table = new TableView<>();
+        TableView<Channel> table2 = new TableView<>();
 
         ObservableList<Channel> channelData = FXCollections.observableArrayList();
         FilteredList<Channel> filteredData = new FilteredList<>(channelData, p -> true);
@@ -318,7 +318,7 @@ public class View {
             e.printStackTrace();
         }
 
-        table.setItems(filteredData);
+        table2.setItems(filteredData);
 
         TableColumn<Channel, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -329,14 +329,14 @@ public class View {
         TableColumn<Channel, String> descriptionColumn = new TableColumn<>("Opis");
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        table.getColumns().addAll(idColumn, nameColumn, descriptionColumn);
+        table2.getColumns().addAll(idColumn, nameColumn, descriptionColumn);
 
-        hellocontrollerchannel.setTable(table);
+        helloController.setTable2(table2);
 
         try {
             List<Channel> channels = getChannels();
             channelData = FXCollections.observableArrayList(channels);
-            table.setItems(channelData);
+            table2.setItems(channelData);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -359,7 +359,7 @@ public class View {
             });
         });
 
-        table.setItems(filteredData);
+        table2.setItems(filteredData);
 
 
         TextField nameField = new TextField();
@@ -386,7 +386,7 @@ public class View {
             MainRepository.getInstance().put("name", nameField.getText());
             MainRepository.getInstance().put("description", descriptionField.getText());
 
-            hellocontrollerchannel.addChannel();
+            helloController.addChannel();
             nameField.clear();
             descriptionField.clear();
         });
@@ -416,7 +416,7 @@ public class View {
         image5.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10,nameField, descriptionField, addButton2, editButton, deleteButton);
-        VBox vbox = new VBox(10, pretraga, searchField, table, inputLayout, image5);
+        VBox vbox = new VBox(10, pretraga, searchField, table2, inputLayout, image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;
 

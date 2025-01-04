@@ -79,6 +79,19 @@ public class HelloController {
 
     private ObservableList<Person> userData = FXCollections.observableArrayList();
 
+    @FXML
+    private TableView<Channel> table2;
+
+    @FXML
+    private TableColumn<Channel, String> nameColumn;
+
+    @FXML
+    private TableColumn<Channel, String> descriptionColumn;
+
+    private ObservableList<Channel> channelData = FXCollections.observableArrayList();
+
+    ApiChannel apiChannel = new ApiChannel();
+
 
 
 
@@ -95,6 +108,19 @@ public class HelloController {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR,
                     "Error loading users: " + e.getMessage());
+            alert.show();
+        }
+    }
+    private void refreshChannelData() {
+        try {
+            List<Channel> channels = ApiChannel.getChannels();
+            channelData.clear();
+            channelData.addAll(channels);
+            table.refresh(); // Force table refresh
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "Error loading channels: " + e.getMessage());
             alert.show();
         }
     }
@@ -117,12 +143,24 @@ public class HelloController {
 
         addButton.setOnAction(event -> addPerson());
         deleteButton.setOnAction(event -> deletePerson(table));
-        editButton.setOnAction(event -> editPerson());
+        editButton.setOnAction(e ->
+                editPerson(table, firstNameField, lastNameField, usernameField, emailField, roleField)
+        );
+
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
+
+        table2.setItems(channelData);
+        refreshChannelData();
 
     }
 
     public void setTable(TableView<Person> table) {
         this.table = table;
+    }
+
+    public void setTable2(TableView<Channel> table2) {
+        this.table2 = table2;
     }
 
     public static boolean createUser(String firstName, String lastName, String username,
@@ -145,6 +183,26 @@ public class HelloController {
                 firstName, lastName, username, email, role, mac);
 
         try(OutputStream os = conn.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        return conn.getResponseCode() == HttpURLConnection.HTTP_OK;
+    }
+
+    public static boolean createChannel(String name, String description) throws IOException {
+        URL url = new URL("your-api-endpoint/text-channel");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Authorization", "Bearer " + AuthClient.getToken());
+        conn.setDoOutput(true);
+
+        String jsonInputString = String.format(
+                "{\"name\": \"%s\", \"description\": \"%s\", \"type\": \"%s\"}",
+                name, description);
+
+        try (OutputStream os = conn.getOutputStream()) {
             byte[] input = jsonInputString.getBytes("utf-8");
             os.write(input, 0, input.length);
         }
@@ -229,9 +287,87 @@ public class HelloController {
             errorAlert.show();
         }
     }
-    public void editPerson() {
-        //TBD
+    public void editPerson(TableView<Person> table, TextField firstNameField, TextField lastNameField, TextField usernameField, TextField emailField, TextField roleField) {
+        Person selectedUser = table.getSelectionModel().getSelectedItem();
+        if (selectedUser == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Morate selektovati korisnika za izmenu.");
+            alert.show();
+            return;
+        }
+
+        // Populate fields with selected user data
+        firstNameField.setText(selectedUser.getFirstName());
+        lastNameField.setText(selectedUser.getLastName());
+        usernameField.setText(selectedUser.getUsername());
+        emailField.setText(selectedUser.getEmail());
+        roleField.setText(String.join(",", selectedUser.getRole()));
+
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Da li ste sigurni da želite izmeniti korisnika?");
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
+        }
+
+        // Update user data from fields
+        selectedUser.setFirstName(firstNameField.getText());
+        selectedUser.setLastName(lastNameField.getText());
+        selectedUser.setUsername(usernameField.getText());
+        selectedUser.setEmail(emailField.getText());
+        selectedUser.setRole(Arrays.asList(roleField.getText().split(",")));
+
+        try {
+            boolean isUpdated = apiClientUser.updateUser(selectedUser);
+            if (isUpdated) {
+                // Refresh the table data from the server
+                try {
+                    List<Person> users = ApiClientUser.getUsers();
+                    table.setItems(FXCollections.observableArrayList(users));
+                    table.refresh();
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Korisnik je uspešno izmenjen.");
+                    successAlert.show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Izmena nije uspela. Proverite server.");
+                errorAlert.show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške prilikom komunikacije sa serverom.");
+            errorAlert.show();
+        }
     }
+    public void addChannel() {
+        try {
+            String name = MainRepository.getInstance().get("name");
+            String description = MainRepository.getInstance().get("description");
+
+            NewChannelDTO newChannel = new NewChannelDTO();
+            newChannel.setName(name);
+            newChannel.setDescription(description);
+
+            boolean success = ApiChannel.addChannel(newChannel);
+
+            if (success) {
+                List<Channel> channels = ApiChannel.getChannels();
+                channelData = FXCollections.observableArrayList(channels);
+                table2.setItems(channelData);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!");
+                alert.show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "Error adding channel: " + e.getMessage());
+            alert.show();
+        }
+    }
+    public ObservableList<Channel> getChannelData() {
+        return channelData;
+    }
+
 
     public ObservableList<Person> getUserData() {
         return userData;

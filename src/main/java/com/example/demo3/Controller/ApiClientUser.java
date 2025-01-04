@@ -75,6 +75,52 @@ public class ApiClientUser {
             return responseBody.contains("User successfully created");
         }
     }
+
+    public static boolean updateUser(Person user) throws IOException {
+        if (user == null || user.getId() == 0) {
+            throw new IllegalArgumentException("Invalid user for update");
+        }
+
+        String url = BASE_URL + "/" + user.getId();
+        System.out.println("Attempting to update user at URL: " + url);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("firstName", user.getFirstName());
+        jsonObject.put("lastName", user.getLastName());
+        jsonObject.put("username", user.getUsername());
+        jsonObject.put("email", user.getEmail());
+        jsonObject.put("role", user.getRole());
+
+        String json = jsonObject.toString();
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                json
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == 403) {
+                System.err.println("Permission denied. Please check your authentication token.");
+                return false;
+            }
+            if (response.code() == 404) {
+                System.err.println("User not found: " + user.getId());
+                return false;
+            }
+            if (!response.isSuccessful()) {
+                System.err.println("Error updating user: " + response.code() + " - " + response.message());
+                return false;
+            }
+            return true;
+        }
+    }
+
     public static boolean deleteUser(Person user) throws IOException {
         if (user == null || user.getId() == 0) {
             throw new IllegalArgumentException("Invalid user for deletion");
@@ -103,36 +149,6 @@ public class ApiClientUser {
                 return false;
             }
             return true;
-        }
-    }
-
-    public static boolean updateUser(Person user) throws IOException {
-
-        if (user == null || user.getId() == 0) {
-            throw new IllegalArgumentException("Nevalidan korisnik za ažuriranje.");
-        }
-
-
-        String url = BASE_URL + "/" + user.getId();
-
-
-        String json = objectMapper.writeValueAsString(user);
-
-
-        RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
-
-
-        Request request = new Request.Builder()
-                .url(url)
-                .put(body)
-                .build();
-
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.err.println("Greška pri ažuriranju korisnika: " + response.message());
-            }
-            return response.isSuccessful();
         }
     }
 
