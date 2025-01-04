@@ -1,9 +1,7 @@
 package com.example.demo3.view;
 
-import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Controller.AuthClient;
 import com.example.demo3.HelloController;
-import com.example.demo3.HelloControllerChannel;
 import com.example.demo3.Model.Channel;
 import com.example.demo3.Model.Person;
 import com.example.demo3.repository.MainRepository;
@@ -11,7 +9,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -24,7 +21,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.demo3.Controller.ApiChannel.getChannels;
 import static com.example.demo3.Controller.ApiClientUser.getUsers;

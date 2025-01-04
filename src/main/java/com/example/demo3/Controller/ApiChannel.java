@@ -34,11 +34,9 @@ public class ApiChannel {
 
     public static boolean addChannel(NewChannelDTO newChannelData) throws IOException {
         String url = "http://192.168.124.28:8080/api/text-channel";
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", newChannelData.getName());
         jsonObject.put("description", newChannelData.getDescription());
-
         String json = jsonObject.toString();
         System.out.println("Request URL: " + url);
         System.out.println("Request JSON: " + json);
@@ -52,19 +50,18 @@ public class ApiChannel {
                 .url(url)
                 .post(body)
                 .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())  // Add this line
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body() != null ? response.body().string() : "";
             System.out.println("Response Code: " + response.code());
             System.out.println("Response Body: " + responseBody);
-
             if (!response.isSuccessful()) {
                 System.out.println("Error Headers: " + response.headers());
                 return false;
             }
 
-            // Check for success message in response
             return responseBody.contains("Channel successfully created");
         }
     }

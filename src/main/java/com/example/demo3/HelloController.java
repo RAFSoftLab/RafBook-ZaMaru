@@ -116,7 +116,7 @@ public class HelloController {
             List<Channel> channels = ApiChannel.getChannels();
             channelData.clear();
             channelData.addAll(channels);
-            table.refresh(); // Force table refresh
+            table2.refresh(); // Change this from table to table2
         } catch (IOException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -338,32 +338,8 @@ public class HelloController {
             errorAlert.show();
         }
     }
-    public void addChannel() {
-        try {
-            String name = MainRepository.getInstance().get("name");
-            String description = MainRepository.getInstance().get("description");
-
-            NewChannelDTO newChannel = new NewChannelDTO();
-            newChannel.setName(name);
-            newChannel.setDescription(description);
-
-            boolean success = ApiChannel.addChannel(newChannel);
-
-            if (success) {
-                List<Channel> channels = ApiChannel.getChannels();
-                channelData = FXCollections.observableArrayList(channels);
-                table2.setItems(channelData);
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!");
-                alert.show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Error adding channel: " + e.getMessage());
-            alert.show();
-        }
-    }
+    public void addChannel() { try { String name = MainRepository.getInstance().get("name"); String description =MainRepository.getInstance().get("description"); NewChannelDTO newChannel = new NewChannelDTO();newChannel.setName(name); newChannel.setDescription(description); boolean success =ApiChannel.addChannel(newChannel); if (success) { List<Channel> channels = ApiChannel.getChannels(); channelData = FXCollections.observableArrayList(channels); table2.setItems(channelData); table2.refresh(); // refresh table2
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!"); alert.show(); } } catch(Exception e) { e.printStackTrace(); Alert alert = new Alert(Alert.AlertType.ERROR, "Error adding channel: " +e.getMessage()); alert.show(); } }
     public ObservableList<Channel> getChannelData() {
         return channelData;
     }
