@@ -147,6 +147,7 @@ public class HelloController {
 
 
 
+
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
 
@@ -293,28 +294,37 @@ public class HelloController {
     }
 
     public void editPerson() {
+        if (firstNameField.getText().isEmpty() ||
+                lastNameField.getText().isEmpty() ||
+                usernameField.getText().isEmpty() ||
+                emailField.getText().isEmpty() ||
+                roleField.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
+            alert.show();
+            return;
+        }
+        Person selectedPerson = table.getSelectionModel().getSelectedItem();
+        if (selectedPerson == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Nijedan red nije selektovan za ažuriranje!");
+            alert.show();
+            return;
+        }
+
+        // Ažuriraj vrednosti selektovanog korisnika
+        selectedPerson.setFirstName(firstNameField.getText());
+        selectedPerson.setLastName(lastNameField.getText());
+        selectedPerson.setUsername(usernameField.getText());
+        selectedPerson.setEmail(emailField.getText());
+        selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
+
+        // Pozovi API za ažuriranje korisnika
         try {
-            // Preuzmi podatke iz MainRepository
-            String firstName = MainRepository.getInstance().get("firstName");
-            String lastName = MainRepository.getInstance().get("lastName");
-            String username = MainRepository.getInstance().get("username");
-            String email = MainRepository.getInstance().get("email");
-            String role = MainRepository.getInstance().get("role");
-
-            // Proveri da li je selektovan korisnik iz tabele
-            Person selectedPerson = table.getSelectionModel().getSelectedItem();
-            if (selectedPerson == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Nijedan korisnik nije selektovan za ažuriranje!");
-                alert.show();
-                return;
-            }
-
-            // Postavi ažurirane vrednosti na selektovanog korisnika
-            selectedPerson.setFirstName(firstName);
-            selectedPerson.setLastName(lastName);
-            selectedPerson.setUsername(username);
-            selectedPerson.setEmail(email);
-            selectedPerson.setRole(Arrays.asList(role.split(", "))); // Pretvori string u listu
+            // Ažuriraj vrednosti selektovanog korisnika
+            selectedPerson.setFirstName(firstNameField.getText());
+            selectedPerson.setLastName(lastNameField.getText());
+            selectedPerson.setUsername(usernameField.getText());
+            selectedPerson.setEmail(emailField.getText());
+            selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
 
             // Pozovi API za ažuriranje korisnika
             boolean success = ApiClientUser.editUser(selectedPerson);
@@ -324,15 +334,23 @@ public class HelloController {
 
                 // Osveži podatke u tabeli
                 table.refresh();
+
+                // Očisti polja za unos
+                firstNameField.clear();
+                lastNameField.clear();
+                usernameField.clear();
+                emailField.clear();
+                roleField.clear();
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Ažuriranje korisnika nije uspelo!");
                 alert.show();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške prilikom ažuriranja korisnika: " + e.getMessage());
+        } catch (IOException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške: " + ex.getMessage());
             alert.show();
         }
+
+
     }
 
 

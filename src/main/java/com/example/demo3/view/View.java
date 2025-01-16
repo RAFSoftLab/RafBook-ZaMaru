@@ -1,5 +1,6 @@
 package com.example.demo3.view;
 
+import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Controller.AuthClient;
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.Channel;
@@ -20,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.example.demo3.Controller.ApiChannel.getChannels;
@@ -204,24 +206,22 @@ public class View {
         TextField roleField = new TextField();
         roleField.setPromptText("role");
 
-        table.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) { // Proveri da li je dvoklik
-                Person selectedPerson = table.getSelectionModel().getSelectedItem(); // Koristi Person ako je tabela za Person
-                if (selectedPerson != null) {
-                    // Kada je red izabran, prenesi podatke u TextField-ove
+        table.setRowFactory(tv -> {
+            TableRow<Person> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Person selectedPerson = row.getItem();
+
+                    // Popuni polja za unos sa podacima selektovanog korisnika
                     firstNameField.setText(selectedPerson.getFirstName());
                     lastNameField.setText(selectedPerson.getLastName());
                     usernameField.setText(selectedPerson.getUsername());
                     emailField.setText(selectedPerson.getEmail());
-
-                    // Ako ulogu imaš kao listu, koristi Join da spojiš sve ulogu u jedan String
                     roleField.setText(String.join(", ", selectedPerson.getRole()));
 
-                    // Ukloni red iz liste podataka
-                    userData.remove(selectedPerson); // Pretpostavlja se da tabela koristi userData kao izvor podataka
-                    table.refresh(); // Osveži tabelu kako bi se prikaz ažurirao
                 }
-            }
+            });
+            return row;
         });
 
 
@@ -300,28 +300,55 @@ public class View {
                 alert.show();
                 return;
             }
-            MainRepository.getInstance().put("firstName", firstNameField.getText());
-            MainRepository.getInstance().put("lastName", lastNameField.getText());
-            MainRepository.getInstance().put("password", usernameField.getText());
-            MainRepository.getInstance().put("email", emailField.getText());
-            MainRepository.getInstance().put("role", roleField.getText());
-            MainRepository.getInstance().put("mac", "no mac address");
+            Person selectedPerson = table.getSelectionModel().getSelectedItem();
+            if (selectedPerson == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Nijedan red nije selektovan za ažuriranje!");
+                alert.show();
+                return;
+            }
 
-            helloController.editPerson();
+            // Ažuriraj vrednosti selektovanog korisnika
+            selectedPerson.setFirstName(firstNameField.getText());
+            selectedPerson.setLastName(lastNameField.getText());
+            selectedPerson.setUsername(usernameField.getText());
+            selectedPerson.setEmail(emailField.getText());
+            selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
 
+            // Pozovi API za ažuriranje korisnika
+            try {
+                // Ažuriraj vrednosti selektovanog korisnika
+                selectedPerson.setFirstName(firstNameField.getText());
+                selectedPerson.setLastName(lastNameField.getText());
+                selectedPerson.setUsername(usernameField.getText());
+                selectedPerson.setEmail(emailField.getText());
+                selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
 
-            // Osveži filter da uključi novog korisnika
+                // Pozovi API za ažuriranje korisnika
+                boolean success = ApiClientUser.editUser(selectedPerson);
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Korisnik uspešno ažuriran!");
+                    alert.show();
 
+                    // Osveži podatke u tabeli
+                    table.refresh();
 
-            // Clear fields after attempt
-            firstNameField.clear();
-            lastNameField.clear();
-            usernameField.clear();
-            emailField.clear();
-            roleField.clear();
+                    // Očisti polja za unos
+                    firstNameField.clear();
+                    lastNameField.clear();
+                    usernameField.clear();
+                    emailField.clear();
+                    roleField.clear();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Ažuriranje korisnika nije uspelo!");
+                    alert.show();
+                }
+            } catch (IOException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške: " + ex.getMessage());
+                alert.show();
+            }
+
 
         });
-
 
 
         editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");

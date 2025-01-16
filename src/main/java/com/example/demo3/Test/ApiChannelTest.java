@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 class ApiChannelTest {
 
-    private static final String BASE_URL = "http://192.168.124.28:8080/api/text-channel";
+    private static final String BASE_URL = "http://192.168.124.28:1524/api/text-channel";
     private ObjectMapper objectMapper;
 
     @Mock
