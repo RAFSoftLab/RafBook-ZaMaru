@@ -46,6 +46,7 @@ public class View {
 
 
 
+
         Label labela2 = new Label("Password:");
         labela2.setStyle("-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:15px;");
         PasswordField passwordField = new PasswordField();
@@ -155,7 +156,7 @@ public class View {
         TableColumn<Person, String> lastNameColumn = new TableColumn<>("Prezime");
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 
-        TableColumn<Person, String> usernameColumn = new TableColumn<>("Username");
+        TableColumn<Person, String> usernameColumn = new TableColumn<>("Password");
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
 
         TableColumn<Person, String> emailColumn = new TableColumn<>("Email");
@@ -170,7 +171,7 @@ public class View {
         table.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, usernameColumn, emailColumn, roleColumn);
 
         TextField searchField = new TextField();
-        searchField.setPromptText("Pretraži klijente...");
+        searchField.setPromptText("Pretraži korisnike...");
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(person -> {

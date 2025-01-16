@@ -35,50 +35,6 @@ public class ApiClientUser {
         }
     }
 
-    public static boolean editUser(NewUserDTO newUserData) throws IOException {
-
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("firstName", newUserData.getFirstName());
-        jsonObject.put("lastName", newUserData.getLastName());
-        jsonObject.put("email", newUserData.getEmail());
-        jsonObject.put("password", newUserData.getPassword());
-        jsonObject.put("macAddress", newUserData.getMacAddress());
-        jsonObject.put("role", "ADMIN");
-
-        String url = BASE_URL;
-
-        String json = jsonObject.toString();
-        System.out.println("Request URL: " + url);
-        System.out.println("Request JSON: " + json);
-
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                json
-        );
-
-        Request request = new Request.Builder()
-                .url(url)
-                .put(body)
-                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
-                .addHeader("Content-Type", "application/json")
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            String responseBody = response.body() != null ? response.body().string() : "";
-            System.out.println("Response Code: " + response.code());
-            System.out.println("Response Body: " + responseBody);
-
-            if (!response.isSuccessful()) {
-                System.out.println("Error Headers: " + response.headers());
-                return false;
-            }
-
-            // Check for success message in response
-            return responseBody.contains("User successfully created");
-        }
-    }
-
     public static boolean addUser(NewUserDTO newUserData) throws IOException {
         String url = BASE_URL + "/auth/register";
 
