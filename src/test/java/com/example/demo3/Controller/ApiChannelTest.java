@@ -1,4 +1,6 @@
-package com.example.demo3.Test;
+package com.example.demo3.Controller;
+
+import static org.junit.jupiter.api.Assertions.*;
 import com.example.demo3.Controller.ApiChannel;
 import com.example.demo3.Model.Channel;
 import com.example.demo3.Model.NewChannelDTO;
@@ -17,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 class ApiChannelTest {
-
     private static final String BASE_URL = "http://192.168.124.28:1524/api/text-channel";
     private ObjectMapper objectMapper;
 
@@ -89,4 +90,6 @@ class ApiChannelTest {
         boolean result = ApiChannel.addChannel(newChannelDTO);
         assertFalse(result);
     }
+
+
 }

@@ -1,5 +1,4 @@
-package com.example.demo3.Test;
-
+package com.example.demo3.Controller;
 import com.example.demo3.Controller.AuthClient;
 import okhttp3.*;
 import org.json.JSONObject;
@@ -13,9 +12,8 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-
-class AuthClientTest {
-
+import static org.junit.jupiter.api.Assertions.*;
+class AuthClientTest2 {
     private static final String BASE_URL = "http://192.168.124.28:8080/api/users/auth/login";
 
     @Mock
@@ -86,5 +84,5 @@ class AuthClientTest {
         String token = AuthClient.getToken();
         assertEquals(mockToken, token);
     }
+  
 }
-

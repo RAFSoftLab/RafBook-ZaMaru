@@ -1,5 +1,6 @@
-package com.example.demo3.Test;
+package com.example.demo3.Controller;
 
+import static org.junit.jupiter.api.Assertions.*;
 import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.Person;
@@ -21,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-class ApiClientUserTest {
 
+class ApiClientUserTest {
     private static final String BASE_URL = "http://192.168.124.28:8080/api/users";
     private ApiClientUser apiClientUser;
     private ObjectMapper objectMapper;
@@ -112,18 +113,4 @@ class ApiClientUserTest {
         assertTrue(result);
     }
 
-    /*@Test
-    void testUpdateUser_Success() throws IOException {
-        List<String> roles = Arrays.asList("ADMIN", "USER");
-        Person user = new Person("Ivana","Jankovic","ivj123","ivanajankovic1302@+@gmail.com",roles);
-        String json = objectMapper.writeValueAsString(user);
-
-        Mockito.when(mockResponse.isSuccessful()).thenReturn(true);
-        Mockito.when(mockCall.execute()).thenReturn(mockResponse);
-        Mockito.when(mockClient.newCall(any(Request.class))).thenReturn(mockCall);
-
-        boolean result = ApiClientUser.updateUser(user);
-        assertTrue(result);
-    }*/
 }
-
