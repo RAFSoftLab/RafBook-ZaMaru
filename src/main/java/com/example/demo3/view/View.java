@@ -4,6 +4,7 @@ import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Controller.AuthClient;
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.Channel;
+import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.Person;
 import com.example.demo3.repository.MainRepository;
 import javafx.beans.property.SimpleStringProperty;
@@ -302,18 +303,18 @@ public class View {
                 return;
             }
             Person selectedPerson = table.getSelectionModel().getSelectedItem();
+            NewUserDTO dto;
+
             if (selectedPerson == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Nijedan red nije selektovan za ažuriranje!");
                 alert.show();
                 return;
             }
+            else{
+                dto=helloController.convertPersonToNewUserDTO(selectedPerson);
+            }
 
-            // Ažuriraj vrednosti selektovanog korisnika
-            selectedPerson.setFirstName(firstNameField.getText());
-            selectedPerson.setLastName(lastNameField.getText());
-            selectedPerson.setUsername(usernameField.getText());
-            selectedPerson.setEmail(emailField.getText());
-            selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
+            // Ažuriraj vrednosti selektovanog korisnik
 
             // Pozovi API za ažuriranje korisnika
             try {
@@ -324,8 +325,9 @@ public class View {
                 selectedPerson.setEmail(emailField.getText());
                 selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
 
+
                 // Pozovi API za ažuriranje korisnika
-                boolean success = ApiClientUser.editUser(selectedPerson);
+                boolean success = ApiClientUser.editUser(dto);
                 if (success) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Korisnik uspešno ažuriran!");
                     alert.show();

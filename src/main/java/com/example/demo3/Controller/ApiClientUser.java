@@ -5,13 +5,19 @@ import com.example.demo3.repository.MainRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ApiClientUser {
     private static final OkHttpClient client = new OkHttpClient();
@@ -109,52 +115,57 @@ public class ApiClientUser {
         }
     }
 
-    public static boolean editUser(Person user) throws IOException {
-        if (user == null || user.getId() == 0) {
+    public static boolean editUser(NewUserDTO userDTO) throws IOException {
+        if (userDTO == null || userDTO.getId() == 0) {
             throw new IllegalArgumentException("Invalid user for update");
         }
+        String url = BASE_URL + "/" + userDTO.getId();
 
-        String url = BASE_URL + "/" + user.getId();
+        // Kreiraj JSON telo request-a
+        String jsonBody = new JSONObject()
+                .put("id", userDTO.getId())
+                .put("firstName", userDTO.getFirstName())
+                .put("lastName", userDTO.getLastName())
+                .put("username", userDTO.getUsername())
+                .put("email", userDTO.getEmail())
+                .put("role", new JSONArray(Arrays.asList(userDTO.getRole().split(","))))
+                .toString();
+        System.out.println(jsonBody);
 
-        // Kreiraj JSON objekat za telo zahteva
-        JSONObject json = new JSONObject();
-        json.put("firstName", user.getFirstName());
-        json.put("lastName", user.getLastName());
-        json.put("username", user.getUsername());
-        json.put("email", user.getEmail());
-        json.put("role", user.getRole());
+        // Kreiraj RequestBody sa JSON sadržajem
+        RequestBody requestBody = RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8"));
 
-        // Kreiraj telo zahteva
-        RequestBody body = RequestBody.create(
-                json.toString(),
-                MediaType.parse("application/json")
-        );
-
-        // Kreiraj zahtev
+        // Kreiraj PUT request
         Request request = new Request.Builder()
                 .url(url)
-                .put(body) // Koristi PUT metod
+                .put(requestBody)
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
 
-        // Izvrši zahtev i obradi odgovor
+        // Pošalji request i obradi odgovor
         try (Response response = client.newCall(request).execute()) {
+            int responseCode = response.code();
+            String responseBody = response.body() != null ? response.body().string() : "";
+
+            System.out.println("Response code: " + responseCode);
+            System.out.println("Response body: " + responseBody);
+
             if (response.code() == 403) {
                 System.err.println("Permission denied. Please check your authentication token.");
                 return false;
             }
             if (response.code() == 404) {
-                System.err.println("User not found: " + user.getId());
+                System.err.println("User not found: " + userDTO.getId());
                 return false;
             }
             if (!response.isSuccessful()) {
                 System.err.println("Error updating user: " + response.code() + " - " + response.message());
                 return false;
             }
-            System.out.println("User updated successfully: " + user.getId());
             return true;
         }
     }
+
 
 
 

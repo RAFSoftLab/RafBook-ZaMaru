@@ -1,4 +1,5 @@
 package com.example.demo3;
+
 import com.example.demo3.Controller.ApiChannel;
 import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Controller.AuthClient;
@@ -93,10 +94,8 @@ public class HelloController {
     ApiChannel apiChannel = new ApiChannel();
 
 
-
-
     ApiClientUser apiClientUser = new ApiClientUser();
-    ApiChannel apichannel=new ApiChannel();
+    ApiChannel apichannel = new ApiChannel();
 
     private void refreshUserData() {
         try {
@@ -111,6 +110,7 @@ public class HelloController {
             alert.show();
         }
     }
+
     private void refreshChannelData() {
         try {
             List<Channel> channels = ApiChannel.getChannels();
@@ -143,9 +143,6 @@ public class HelloController {
 
         addButton.setOnAction(event -> addPerson());
         deleteButton.setOnAction(event -> deletePerson(table));
-
-
-
 
 
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -187,7 +184,7 @@ public class HelloController {
                         "\"email\": \"%s\", \"role\": \"%s\", \"mac\": \"%s\"}",
                 firstName, lastName, username, email, role, mac);
 
-        try(OutputStream os = conn.getOutputStream()) {
+        try (OutputStream os = conn.getOutputStream()) {
             byte[] input = jsonInputString.getBytes("utf-8");
             os.write(input, 0, input.length);
         }
@@ -254,7 +251,6 @@ public class HelloController {
     }
 
 
-
     public void deletePerson(TableView<Person> table) {
         Person selectedUser = table.getSelectionModel().getSelectedItem();
         if (selectedUser == null) {
@@ -293,127 +289,92 @@ public class HelloController {
         }
     }
 
-    public void editPerson() {
-        if (firstNameField.getText().isEmpty() ||
-                lastNameField.getText().isEmpty() ||
-                usernameField.getText().isEmpty() ||
-                emailField.getText().isEmpty() ||
-                roleField.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
-            alert.show();
-            return;
-        }
-        Person selectedPerson = table.getSelectionModel().getSelectedItem();
-        if (selectedPerson == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Nijedan red nije selektovan za ažuriranje!");
-            alert.show();
-            return;
+    public static NewUserDTO convertPersonToNewUserDTO(Person person) {
+        if (person == null) {
+            return null;
         }
 
-        // Ažuriraj vrednosti selektovanog korisnika
-        selectedPerson.setFirstName(firstNameField.getText());
-        selectedPerson.setLastName(lastNameField.getText());
-        selectedPerson.setUsername(usernameField.getText());
-        selectedPerson.setEmail(emailField.getText());
-        selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
+        NewUserDTO dto = new NewUserDTO();
 
-        // Pozovi API za ažuriranje korisnika
-        try {
-            // Ažuriraj vrednosti selektovanog korisnika
-            selectedPerson.setFirstName(firstNameField.getText());
-            selectedPerson.setLastName(lastNameField.getText());
-            selectedPerson.setUsername(usernameField.getText());
-            selectedPerson.setEmail(emailField.getText());
-            selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
+        // Copy all available fields
+        dto.setId(person.getId());
+        dto.setFirstName(person.getFirstName());
+        dto.setLastName(person.getLastName());
+        dto.setUsername(person.getUsername());
+        dto.setEmail(person.getEmail());
 
-            // Pozovi API za ažuriranje korisnika
-            boolean success = ApiClientUser.editUser(selectedPerson);
-            if (success) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Korisnik uspešno ažuriran!");
-                alert.show();
-
-                // Osveži podatke u tabeli
-                table.refresh();
-
-                // Očisti polja za unos
-                firstNameField.clear();
-                lastNameField.clear();
-                usernameField.clear();
-                emailField.clear();
-                roleField.clear();
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Ažuriranje korisnika nije uspelo!");
-                alert.show();
-            }
-        } catch (IOException ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške: " + ex.getMessage());
-            alert.show();
+        // For role, since Person has List<String> and NewUserDTO has String,
+        // we'll take the first role if available
+        if (person.getRole() != null && !person.getRole().isEmpty()) {
+            dto.setRole(person.getRole().get(0));
         }
 
+        // Set password to username by default if needed
+        dto.setPassword(person.getUsername());
 
+        // Set a default MAC address since Person doesn't have this field
+        dto.setMacAddress("no mac address");
+
+        return dto;
     }
 
 
 
+        public void addChannel () {
+            try {
+                String name = MainRepository.getInstance().get("name");
+                String description = MainRepository.getInstance().get("description");
 
+                NewChannelDTO newChannel = new NewChannelDTO();
+                newChannel.setName(name);
+                newChannel.setDescription(description);
 
+                boolean success = ApiChannel.addChannel(newChannel);
 
-    public void addChannel() {
-        try {
-            String name = MainRepository.getInstance().get("name");
-            String description = MainRepository.getInstance().get("description");
+                if (success) {
+                    System.out.println("Channel added successfully, refreshing table...");
 
-            NewChannelDTO newChannel = new NewChannelDTO();
-            newChannel.setName(name);
-            newChannel.setDescription(description);
+                    // Fetch updated channel list
+                    List<Channel> channels = ApiChannel.getChannels();
+                    System.out.println("Fetched " + channels.size() + " channels");
 
-            boolean success = ApiChannel.addChannel(newChannel);
+                    // Clear existing data
+                    channelData.clear();
 
-            if (success) {
-                System.out.println("Channel added successfully, refreshing table...");
+                    // Add new data
+                    channelData = FXCollections.observableArrayList(channels);
 
-                // Fetch updated channel list
-                List<Channel> channels = ApiChannel.getChannels();
-                System.out.println("Fetched " + channels.size() + " channels");
+                    // Update table items
+                    if (table2 != null) {
+                        table2.setItems(null); // Clear the items first
+                        table2.setItems(channelData);
+                        table2.refresh();
+                        System.out.println("Table refreshed with " + table2.getItems().size() + " items");
+                    } else {
+                        System.out.println("table2 is null!");
+                    }
 
-                // Clear existing data
-                channelData.clear();
-
-                // Add new data
-                channelData = FXCollections.observableArrayList(channels);
-
-                // Update table items
-                if (table2 != null) {
-                    table2.setItems(null); // Clear the items first
-                    table2.setItems(channelData);
-                    table2.refresh();
-                    System.out.println("Table refreshed with " + table2.getItems().size() + " items");
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!");
+                    alert.show();
                 } else {
-                    System.out.println("table2 is null!");
+                    System.out.println("Channel addition failed");
                 }
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR,
+                        "Error adding channel: " + e.getMessage());
                 alert.show();
-            } else {
-                System.out.println("Channel addition failed");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Error adding channel: " + e.getMessage());
-            alert.show();
         }
+
+        public ObservableList<Channel> getChannelData () {
+            return channelData;
+        }
+
+
+        public ObservableList<Person> getUserData () {
+            return userData;
+        }
+
+
     }
-
-    public ObservableList<Channel> getChannelData() {
-        return channelData;
-    }
-
-
-    public ObservableList<Person> getUserData() {
-        return userData;
-    }
-
-
-
-}

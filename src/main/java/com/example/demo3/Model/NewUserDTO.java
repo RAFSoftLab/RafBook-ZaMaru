@@ -1,6 +1,8 @@
 package com.example.demo3.Model;
 
 public class NewUserDTO {
+
+    private int id;
     private String firstName;
     private String lastName;
     private String email;
@@ -8,6 +10,15 @@ public class NewUserDTO {
     private String password;
     private String macAddress;
     private String role;
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id=id;
+    }
+
 
     public String getUsername() {
         return username;
