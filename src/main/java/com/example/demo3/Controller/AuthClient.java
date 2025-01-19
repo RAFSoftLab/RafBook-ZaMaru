@@ -10,14 +10,9 @@ public class AuthClient {
     private static final OkHttpClient client = new OkHttpClient();
     public static String token;
 
-
-
-
-
     public static String authenticate(String username, String password) throws IOException {
 
         String json = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
-
 
         RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
@@ -25,21 +20,14 @@ public class AuthClient {
                 .post(body)
                 .build();
 
-
-
-
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
 
                 String responseBody = response.body().string();
                 JSONObject jsonResponse = new JSONObject(responseBody);
-
-
                 token = jsonResponse.optString("token", null);
                 System.out.println(token);
                 MainRepository.getInstance().put("jwt", token);
-
-
                 return token;
             } else {
 

@@ -77,12 +77,9 @@ public class ApiClientUser {
                 return false;
             }
 
-            // Check for success message in response
             return responseBody.contains("User successfully created");
         }
     }
-
-
 
     public static boolean deleteUser(Person user) throws IOException {
         if (user == null || user.getId() == 0) {
@@ -121,28 +118,25 @@ public class ApiClientUser {
         }
         String url = BASE_URL + "/" + userDTO.getId();
 
-        // Kreiraj JSON telo request-a
+
         String jsonBody = new JSONObject()
                 .put("id", userDTO.getId())
                 .put("firstName", userDTO.getFirstName())
                 .put("lastName", userDTO.getLastName())
                 .put("username", userDTO.getUsername())
                 .put("email", userDTO.getEmail())
-                .put("role", new JSONArray(Arrays.asList(userDTO.getRole().split(","))))
+                //.put("role", new JSONArray(Arrays.asList(userDTO.getRole().split(","))))
                 .toString();
         System.out.println(jsonBody);
 
-        // Kreiraj RequestBody sa JSON sadržajem
         RequestBody requestBody = RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8"));
 
-        // Kreiraj PUT request
         Request request = new Request.Builder()
                 .url(url)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
 
-        // Pošalji request i obradi odgovor
         try (Response response = client.newCall(request).execute()) {
             int responseCode = response.code();
             String responseBody = response.body() != null ? response.body().string() : "";
@@ -165,7 +159,6 @@ public class ApiClientUser {
             return true;
         }
     }
-
 
 
 

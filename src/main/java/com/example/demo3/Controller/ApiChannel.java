@@ -59,7 +59,6 @@ public class ApiChannel {
             System.out.println("Response Code: " + response.code());
             System.out.println("Response Body: " + responseBody);
 
-            // Change this check - just verify if response is successful (200)
             return response.code() == 200;
         }
     }

@@ -14,9 +14,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,7 +36,7 @@ import static com.example.demo3.Controller.ApiClientUser.*;
 
 public class HelloController {
 
-    //for user
+
     @FXML
     private TextField firstNameField;
 
@@ -90,6 +94,10 @@ public class HelloController {
     private TableColumn<Channel, String> descriptionColumn;
 
     private ObservableList<Channel> channelData = FXCollections.observableArrayList();
+
+
+
+
 
     ApiChannel apiChannel = new ApiChannel();
 
@@ -167,11 +175,8 @@ public class HelloController {
 
     public static boolean createUser(String firstName, String lastName, String username,
                                      String email, String role, String mac) throws IOException {
-        // Create  NewUserDTO or object the API expects
-        // Make the HTTP POST request to create the user
-        // Return true if successful, false otherwise
 
-        // Example implementation (adjust according to your API):
+
         URL url = new URL("your-api-endpoint/users");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -213,14 +218,13 @@ public class HelloController {
     }
 
 
-    // Keep as void:
     public void addPerson() {
         try {
             String firstName = MainRepository.getInstance().get("firstName");
             String lastName = MainRepository.getInstance().get("lastName");
             String username = MainRepository.getInstance().get("password");
             String email = MainRepository.getInstance().get("email");
-            String role = MainRepository.getInstance().get("role");
+            //String role = MainRepository.getInstance().get("role");
             String mac = MainRepository.getInstance().get("mac");
 
             NewUserDTO newUser = new NewUserDTO();
@@ -229,7 +233,7 @@ public class HelloController {
             newUser.setUsername(username);
             newUser.setPassword(username);
             newUser.setEmail(email.toLowerCase());
-            newUser.setRole("ADMIN");
+            //newUser.setRole("ADMIN");
             newUser.setMacAddress(mac);
 
             boolean success = ApiClientUser.addUser(newUser);
@@ -296,7 +300,7 @@ public class HelloController {
 
         NewUserDTO dto = new NewUserDTO();
 
-        // Copy all available fields
+
         dto.setId(person.getId());
         dto.setFirstName(person.getFirstName());
         dto.setLastName(person.getLastName());
@@ -305,14 +309,12 @@ public class HelloController {
 
         // For role, since Person has List<String> and NewUserDTO has String,
         // we'll take the first role if available
-        if (person.getRole() != null && !person.getRole().isEmpty()) {
+        /*if (person.getRole() != null && !person.getRole().isEmpty()) {
             dto.setRole(person.getRole().get(0));
-        }
+        }*/
 
-        // Set password to username by default if needed
         dto.setPassword(person.getUsername());
 
-        // Set a default MAC address since Person doesn't have this field
         dto.setMacAddress("no mac address");
 
         return dto;
@@ -334,17 +336,13 @@ public class HelloController {
                 if (success) {
                     System.out.println("Channel added successfully, refreshing table...");
 
-                    // Fetch updated channel list
                     List<Channel> channels = ApiChannel.getChannels();
                     System.out.println("Fetched " + channels.size() + " channels");
 
-                    // Clear existing data
                     channelData.clear();
 
-                    // Add new data
                     channelData = FXCollections.observableArrayList(channels);
 
-                    // Update table items
                     if (table2 != null) {
                         table2.setItems(null); // Clear the items first
                         table2.setItems(channelData);

@@ -9,7 +9,7 @@ public class NewUserDTO {
     private String username;  // dodato
     private String password;
     private String macAddress;
-    private String role;
+    //private String role;
 
     public int getId(){
         return id;
@@ -69,11 +69,11 @@ public class NewUserDTO {
         this.macAddress = macAddress;
     }
 
-    public String getRole() {
+    /*public String getRole() {
         return role;
     }
 
     public void setRole(String role) {
         this.role = role;
-    }
+    }*/
 }
