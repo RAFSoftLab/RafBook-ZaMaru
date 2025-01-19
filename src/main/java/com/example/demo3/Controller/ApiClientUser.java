@@ -160,29 +160,34 @@ public class ApiClientUser {
         }
     }
 
-
-
-    public static boolean createUser(String firstName, String lastName, String username,
-                                     String email, String role, String mac) throws IOException {
-        URL url = new URL("http://192.168.124.28:1524/api/users/auth/register");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-
-        // Match the CreateUserDTO format from API docs
-        String jsonInputString = String.format(
-                "{\"firstName\": \"%s\", \"lastName\": \"%s\", \"email\": \"%s\", " +
-                        "\"password\": \"%s\", \"macAddress\": \"%s\", \"role\": \"%s\"}",
-                firstName, lastName, email, username, mac, role.toUpperCase());
-
-        try(OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
-            os.write(input, 0, input.length);
+    public static boolean deleteRoleFromUser(Person user, String role) throws IOException {
+        if (user == null || user.getId() == 0 || role == null || role.isEmpty()) {
+            throw new IllegalArgumentException("Invalid user or role for deletion");
         }
 
-        int responseCode = conn.getResponseCode();
-        return responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED;
+        String url = BASE_URL + "/users/" + user.getId() + "/removeRole/" + role;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(RequestBody.create(null, new byte[0]))
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.code() == 403) {
+                System.err.println("Permission denied. Please check your authentication token.");
+                return false;
+            }
+            if (response.code() == 404) {
+                System.err.println("User or role not found: " + user.getId() + " or " + role);
+                return false;
+            }
+            if (!response.isSuccessful()) {
+                System.err.println("Error deleting role: " + response.code() + " - " + response.message());
+                return false;
+            }
+            return true;
+        }
     }
 
 }
