@@ -173,58 +173,12 @@ public class HelloController {
         this.table2 = table2;
     }
 
-    public static boolean createUser(String firstName, String lastName, String username,
-                                     String email, String role, String mac) throws IOException {
-
-
-        URL url = new URL("your-api-endpoint/users");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + AuthClient.getToken());
-        conn.setDoOutput(true);
-
-        String jsonInputString = String.format(
-                "{\"firstName\": \"%s\", \"lastName\": \"%s\", \"username\": \"%s\", " +
-                        "\"email\": \"%s\", \"role\": \"%s\", \"mac\": \"%s\"}",
-                firstName, lastName, username, email, role, mac);
-
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        return conn.getResponseCode() == HttpURLConnection.HTTP_OK;
-    }
-
-    public static boolean createChannel(String name, String description) throws IOException {
-        URL url = new URL("your-api-endpoint/text-channel");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + AuthClient.getToken());
-        conn.setDoOutput(true);
-
-        String jsonInputString = String.format(
-                "{\"name\": \"%s\", \"description\": \"%s\", \"type\": \"%s\"}",
-                name, description);
-
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        }
-
-        return conn.getResponseCode() == HttpURLConnection.HTTP_OK;
-    }
-
-
     public void addPerson() {
         try {
             String firstName = MainRepository.getInstance().get("firstName");
             String lastName = MainRepository.getInstance().get("lastName");
             String username = MainRepository.getInstance().get("password");
             String email = MainRepository.getInstance().get("email");
-            //String role = MainRepository.getInstance().get("role");
             String mac = MainRepository.getInstance().get("mac");
 
             NewUserDTO newUser = new NewUserDTO();
@@ -233,7 +187,6 @@ public class HelloController {
             newUser.setUsername(username);
             newUser.setPassword(username);
             newUser.setEmail(email.toLowerCase());
-            //newUser.setRole("ADMIN");
             newUser.setMacAddress(mac);
 
             boolean success = ApiClientUser.addUser(newUser);
@@ -272,7 +225,6 @@ public class HelloController {
         try {
             boolean isDeleted = apiClientUser.deleteUser(selectedUser);
             if (isDeleted) {
-                // Refresh the table data from the server
                 try {
                     List<Person> users = ApiClientUser.getUsers();
                     table.setItems(FXCollections.observableArrayList(users));
@@ -306,17 +258,8 @@ public class HelloController {
         dto.setLastName(person.getLastName());
         dto.setUsername(person.getUsername());
         dto.setEmail(person.getEmail());
-
-        // For role, since Person has List<String> and NewUserDTO has String,
-        // we'll take the first role if available
-        /*if (person.getRole() != null && !person.getRole().isEmpty()) {
-            dto.setRole(person.getRole().get(0));
-        }*/
-
         dto.setPassword(person.getUsername());
-
         dto.setMacAddress("no mac address");
-
         return dto;
     }
 
