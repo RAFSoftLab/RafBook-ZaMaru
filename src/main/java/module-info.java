@@ -6,11 +6,7 @@ module com.example.demo3 {
     requires org.json;
 
     // Testing modules
-    requires org.junit.jupiter.api;
-    requires org.mockito;
-    requires net.bytebuddy;
-    requires net.bytebuddy.agent;
-    requires org.mockito.junit.jupiter;
+    //requires org.junit.jupiter.api;
     requires org.testng;
     // Remove the "requires junit;" line since we're using JUnit 5
 

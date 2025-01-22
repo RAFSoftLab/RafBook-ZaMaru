@@ -1,14 +1,13 @@
 package com.example.demo3.view;
 
+import com.example.demo3.Controller.ApiClientUser;
+import com.example.demo3.HelloController;
 import com.example.demo3.Model.Person;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -16,12 +15,26 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PopUpWindowView {
 
     TableView<String> tableView = new TableView<>();
-    private boolean isColumnAdded = false; // Indikator za dodavanje kolone
+    private boolean isColumnAdded = false;
+    HelloController helloController=new HelloController();
+    int userId;
+    public void setUserId(int userId) {
+        this.userId = userId; // Postavljanje vrednosti
+        System.out.println("Postavljen ID korisnika: " + this.userId);
+    }
+
+    // Getter metoda za dohvat vrednosti (opciono)
+    public int getUserId() {
+        return this.userId;
+    }
+
+
 
     public void showPopupWindow() {
         Stage popupStage = new Stage();
@@ -32,11 +45,11 @@ public class PopUpWindowView {
         Image icon = new Image(getClass().getResource("/images/raf.jpg").toExternalForm());
         popupStage.getIcons().add(icon);
 
-        if (!isColumnAdded) { // Proveravamo da li je kolona već dodata
+        if (!isColumnAdded) {
             TableColumn<String, String> column1 = new TableColumn<>("Uloge");
             column1.setCellValueFactory(data -> new SimpleStringProperty(data.getValue()));
             tableView.getColumns().addAll(column1);
-            isColumnAdded = true; // Obeležavamo da je kolona dodata
+            isColumnAdded = true;
         }
 
         TextField inputField = new TextField();
@@ -44,12 +57,9 @@ public class PopUpWindowView {
 
         Button btnAddRole = new Button("Dodaj novu ulogu");
         btnAddRole.setOnAction(e -> {
-            String newRole = inputField.getText().trim();
-            if (!newRole.isEmpty()) {
-                tableView.getItems().add(newRole);
-                inputField.clear();
-            }
+            helloController.addRoleToTable(tableView, inputField);
         });
+
         btnAddRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         btnAddRole.setOnMouseEntered(e -> {
             btnAddRole.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -60,12 +70,6 @@ public class PopUpWindowView {
         });
 
         Button btnDeleteRole = new Button("Obrisi ulogu");
-        btnDeleteRole.setOnAction(e -> {
-            String selectedItem = tableView.getSelectionModel().getSelectedItem();
-            if (selectedItem != null) {
-                tableView.getItems().remove(selectedItem);
-            }
-        });
 
         btnDeleteRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         btnDeleteRole.setOnMouseEntered(e -> {
@@ -74,6 +78,9 @@ public class PopUpWindowView {
 
         btnDeleteRole.setOnMouseExited(e -> {
             btnDeleteRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+        btnDeleteRole.setOnAction(e -> {
+            helloController.deleteRoleFromTable(tableView,userId);
         });
 
         HBox controlsLayout = new HBox(10, inputField, btnAddRole);
@@ -91,5 +98,6 @@ public class PopUpWindowView {
         ObservableList<String> observableRoles = FXCollections.observableArrayList(roles);
         tableView.setItems(observableRoles);
     }
+
 }
 

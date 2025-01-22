@@ -26,6 +26,10 @@ import static com.example.demo3.Controller.ApiClientUser.getUsers;
 public class UserView {
     HelloController helloController=new HelloController();
     PopUpWindowView popUpWindowView=new PopUpWindowView();
+    Person user;
+    public void setUser(Person user) {
+        this.user = user;
+    }
 
     public VBox createClientTabContent() {
         TableView<Person> table = new TableView<>();
@@ -69,12 +73,13 @@ public class UserView {
 
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldSelection, newSelection) -> {
             if (newSelection != null) {
+                int selectedUserId = newSelection.getId();
                 List<String> roles = newSelection.getRole();
                 System.out.println("Role selektovanog korisnika: " + roles);
 
-                // Ažuriraj tabelu uloga u PopUpWindowView
                 if (popUpWindowView != null) {
                     popUpWindowView.updateRolesTable(roles);
+                    popUpWindowView.setUserId(selectedUserId);
                 }
             } else {
                 System.out.println("Nijedan korisnik nije selektovan.");
@@ -223,6 +228,7 @@ public class UserView {
                 selectedPerson.setUsername(usernameField.getText());
                 selectedPerson.setEmail(emailField.getText());
                 selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
+                dto=helloController.convertPersonToNewUserDTO(selectedPerson);
 
 
                 boolean success = ApiClientUser.editUser(dto);
@@ -232,7 +238,6 @@ public class UserView {
 
                     table.refresh();
 
-                    // Očisti polja za unos
                     firstNameField.clear();
                     lastNameField.clear();
                     usernameField.clear();

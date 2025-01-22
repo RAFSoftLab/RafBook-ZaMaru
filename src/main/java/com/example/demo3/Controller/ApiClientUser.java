@@ -130,12 +130,15 @@ public class ApiClientUser {
         System.out.println(jsonBody);
 
         RequestBody requestBody = RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8"));
+        System.out.println(requestBody);
+
 
         Request request = new Request.Builder()
                 .url(url)
                 .put(requestBody)
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
+        System.out.println(request.toString());
 
         try (Response response = client.newCall(request).execute()) {
             int responseCode = response.code();
@@ -160,16 +163,51 @@ public class ApiClientUser {
         }
     }
 
-    public static boolean deleteRoleFromUser(Person user, String role) throws IOException {
-        if (user == null || user.getId() == 0 || role == null || role.isEmpty()) {
-            throw new IllegalArgumentException("Invalid user or role for deletion");
+    public static boolean deleteRoleFromUser(int userId, String role) throws IOException {
+        if (userId == 0 || role == null || role.isEmpty()) {
+            throw new IllegalArgumentException("Invalid user ID or role for deletion");
         }
 
-        String url = BASE_URL + "/users/" + user.getId() + "/removeRole/" + role;
+        String url = BASE_URL + "/" + userId + "/removeRole/" + role;
 
         Request request = new Request.Builder()
                 .url(url)
                 .patch(RequestBody.create(null, new byte[0]))
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .build();
+        System.out.println(request.body() +  " " + request.toString());
+
+
+
+        try (Response response = client.newCall(request).execute()) {
+            System.out.println("Response Code: " + response.code());
+            System.out.println("Response Body: " + response.body().string());
+            if (response.code() == 403) {
+                System.err.println("Permission denied. Please check your authentication token.");
+                return false;
+            }
+            if (response.code() == 404) {
+                System.err.println("User or role not found: " + userId + " or " + role);
+                return false;
+            }
+            if (!response.isSuccessful()) {
+                System.err.println("Error deleting role: " + response.code() + " - " + response.message());
+                return false;
+            }
+            return true;
+
+        }
+
+    }
+    public static boolean addRoleFromUser(int userId, String role) throws IOException {
+        if (userId == 0 || role == null || role.isEmpty()) {
+            throw new IllegalArgumentException("Invalid user ID or role for addition");
+        }
+        String url = BASE_URL + "/users/" + userId + "/addRole/" + role;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(RequestBody.create(null, new byte[0])) // Za PATCH koristimo prazan telo
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
 
@@ -179,16 +217,19 @@ public class ApiClientUser {
                 return false;
             }
             if (response.code() == 404) {
-                System.err.println("User or role not found: " + user.getId() + " or " + role);
+                System.err.println("User or role not found: " + userId + " or " + role);
                 return false;
             }
             if (!response.isSuccessful()) {
-                System.err.println("Error deleting role: " + response.code() + " - " + response.message());
+                System.err.println("Error adding role: " + response.code() + " - " + response.message());
                 return false;
             }
             return true;
         }
     }
+
+
+
 
 }
 

@@ -26,7 +26,7 @@ public class Channel {
         this.id=id;
     }
 
-    // Getters and Setters for name
+
     public String getName() {
         return name;
     }
@@ -35,7 +35,7 @@ public class Channel {
         this.name = name;
     }
 
-    // Getters and Setters for description
+
     public String getDescription() {
         return description;
     }
@@ -44,7 +44,7 @@ public class Channel {
         this.description = description;
     }
 
-    // Getters and Setters for messageDTOList
+
     public List<String> getMessageDTOList() {
         return messageDTOList;
     }
@@ -53,7 +53,7 @@ public class Channel {
         this.messageDTOList = messageDTOList;
     }
 
-    // Getters and Setters for canWrite
+
     public boolean isCanWrite() {
         return canWrite;
     }

@@ -26,11 +26,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static com.example.demo3.Controller.ApiClientUser.*;
 
@@ -93,6 +91,7 @@ public class HelloController {
     @FXML
     private TableColumn<Channel, String> descriptionColumn;
 
+
     private ObservableList<Channel> channelData = FXCollections.observableArrayList();
 
 
@@ -103,14 +102,14 @@ public class HelloController {
 
 
     ApiClientUser apiClientUser = new ApiClientUser();
-    ApiChannel apichannel = new ApiChannel();
+
 
     private void refreshUserData() {
         try {
             List<Person> users = ApiClientUser.getUsers();
             userData.clear();
             userData.addAll(users);
-            table.refresh(); // Force table refresh
+            table.refresh();
         } catch (IOException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -124,7 +123,7 @@ public class HelloController {
             List<Channel> channels = ApiChannel.getChannels();
             channelData.clear();
             channelData.addAll(channels);
-            table2.refresh(); // Change this from table to table2
+            table2.refresh();
         } catch (IOException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR,
@@ -265,6 +264,48 @@ public class HelloController {
 
 
 
+    public void deleteRoleFromTable(TableView<String> tableView, int userId) {
+        String selectedRole = tableView.getSelectionModel().getSelectedItem();
+
+        if (selectedRole != null) {
+            try {
+                boolean success = ApiClientUser.deleteRoleFromUser(userId, selectedRole);
+
+                if (success) {
+
+                    tableView.getItems().remove(selectedRole);
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Uloga je uspešno obrisana.");
+                    alert.show();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške prilikom brisanja uloge iz baze.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Greška u komunikaciji sa serverom: " + e.getMessage());
+                alert.show();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Nijedna uloga nije selektovana.");
+            alert.show();
+        }
+    }
+
+    public void addRoleToTable(TableView<String> tableView, TextField inputField) {
+        String newRole = inputField.getText().trim();
+
+        if (!newRole.isEmpty()) {
+            tableView.getItems().add(newRole);
+            inputField.clear();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Uloga je uspešno dodata.");
+            alert.show();
+            table.refresh();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Morate uneti ulogu.");
+            alert.show();
+        }
+    }
         public void addChannel () {
             try {
                 String name = MainRepository.getInstance().get("name");
@@ -316,6 +357,4 @@ public class HelloController {
         public ObservableList<Person> getUserData () {
             return userData;
         }
-
-
     }
