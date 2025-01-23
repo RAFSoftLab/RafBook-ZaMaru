@@ -25,11 +25,10 @@ public class PopUpWindowView {
     HelloController helloController=new HelloController();
     int userId;
     public void setUserId(int userId) {
-        this.userId = userId; // Postavljanje vrednosti
+        this.userId = userId;
         System.out.println("Postavljen ID korisnika: " + this.userId);
     }
 
-    // Getter metoda za dohvat vrednosti (opciono)
     public int getUserId() {
         return this.userId;
     }
@@ -57,7 +56,7 @@ public class PopUpWindowView {
 
         Button btnAddRole = new Button("Dodaj novu ulogu");
         btnAddRole.setOnAction(e -> {
-            helloController.addRoleToTable(tableView, inputField);
+            helloController.addRoleToTable(tableView, inputField,userId);
         });
 
         btnAddRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");

@@ -203,7 +203,7 @@ public class ApiClientUser {
         if (userId == 0 || role == null || role.isEmpty()) {
             throw new IllegalArgumentException("Invalid user ID or role for addition");
         }
-        String url = BASE_URL + "/users/" + userId + "/addRole/" + role;
+        String url = BASE_URL + "/" + userId + "/addRole/" + role;
 
         Request request = new Request.Builder()
                 .url(url)

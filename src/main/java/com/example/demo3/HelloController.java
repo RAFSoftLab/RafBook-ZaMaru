@@ -147,7 +147,6 @@ public class HelloController {
 
         table.setItems(userData);
         refreshUserData();
-
         addButton.setOnAction(event -> addPerson());
         deleteButton.setOnAction(event -> deletePerson(table));
 
@@ -292,21 +291,36 @@ public class HelloController {
         }
     }
 
-    public void addRoleToTable(TableView<String> tableView, TextField inputField) {
+    public void addRoleToTable(TableView<String> tableView, TextField inputField, int userId) {
         String newRole = inputField.getText().trim();
 
         if (!newRole.isEmpty()) {
-            tableView.getItems().add(newRole);
-            inputField.clear();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Uloga je uspešno dodata.");
-            alert.show();
-            table.refresh();
+
+            try {
+                boolean success = addRoleFromUser(userId, newRole);
+                if (success) {
+                    tableView.getItems().add(newRole);
+                    inputField.clear();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Uloga je uspešno dodata.");
+                    alert.show();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Dodavanje uloge nije uspelo. Proverite podatke.");
+                    alert.show();
+                }
+            } catch (IllegalArgumentException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Neispravan unos: " + e.getMessage());
+                alert.show();
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške prilikom komunikacije sa serverom: " + e.getMessage());
+                alert.show();
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Morate uneti ulogu.");
             alert.show();
         }
     }
-        public void addChannel () {
+
+    public void addChannel () {
             try {
                 String name = MainRepository.getInstance().get("name");
                 String description = MainRepository.getInstance().get("description");
