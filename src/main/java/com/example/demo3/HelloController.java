@@ -171,6 +171,10 @@ public class HelloController {
         this.table2 = table2;
     }
 
+    public List<String> getUpdatedRolesForUser(int userId) {
+        return new ArrayList<>();
+    }
+
     public void addPerson() {
         try {
             String firstName = MainRepository.getInstance().get("firstName");

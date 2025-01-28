@@ -280,7 +280,7 @@ public class UserView {
         image3.setFitWidth(200);
         image3.setPreserveRatio(true);
 
-        HBox inputLayout = new HBox(10, firstNameField, lastNameField,usernameField, emailField,roleField, addButton,editButton,deleteButton,roleButton);
+        HBox inputLayout = new HBox(10, firstNameField, lastNameField,usernameField, emailField, addButton,editButton,deleteButton,roleButton);
         VBox vbox = new VBox(10, new Label("Pretraga:"),searchField, table, inputLayout,image3);
         vbox.setStyle("-fx-background-color:white;");
         return vbox;

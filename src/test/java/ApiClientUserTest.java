@@ -1,5 +1,6 @@
 import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.HelloApplication;
+import com.example.demo3.HelloController;
 import com.example.demo3.repository.MainRepository;
 import com.example.demo3.Model.Person;
 import javafx.collections.ObservableList;
@@ -16,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ApiClientUserTest extends ApplicationTest {
 
     private TableView<Person> table;
+    private HelloController helloController;
+
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -52,4 +55,57 @@ public class ApiClientUserTest extends ApplicationTest {
             fail("Izuzetak pri pozivu metode getUsers: " + e.getMessage());
         }
     }
+
+    @Test
+    public void testAddPerson() {
+        try {
+
+            ObservableList<Person> initialTableData = table.getItems();
+            int initialSize = initialTableData.size();
+
+            MainRepository.getInstance().put("firstName", "TestFirstName");
+            MainRepository.getInstance().put("lastName", "TestLastName");
+            MainRepository.getInstance().put("password", "TestUsername");
+            MainRepository.getInstance().put("email", "testemail@example.com");
+            MainRepository.getInstance().put("mac", "test-mac-address");
+
+            helloController.addPerson();
+
+            ObservableList<Person> updatedTableData = table.getItems();
+
+            assertEquals(initialSize + 1, updatedTableData.size(), "Broj korisnika u tabeli se nije povećao.");
+
+            Person lastPerson = updatedTableData.get(updatedTableData.size() - 1);
+            assertNotNull(lastPerson, "Poslednji korisnik u tabeli ne sme biti null.");
+            assertEquals("TestFirstName", lastPerson.getFirstName(), "Ime poslednjeg korisnika se ne poklapa.");
+            assertEquals("TestLastName", lastPerson.getLastName(), "Prezime poslednjeg korisnika se ne poklapa.");
+            assertEquals("TestUsername", lastPerson.getUsername(), "Korisničko ime poslednjeg korisnika se ne poklapa.");
+            assertEquals("testemail@example.com", lastPerson.getEmail(), "Email poslednjeg korisnika se ne poklapa.");
+
+        } catch (Exception e) {
+            fail("Izuzetak prilikom testiranja metode addPerson: " + e.getMessage());
+        }
+    }
+    @Test
+    public void testDeletePerson() {
+        try {
+            // Kreiramo testni objekat bez ID-a
+            Person testPerson = new Person("TestFirstName", "TestLastName", "TestUsername", "testemail@example.com", List.of("ADMIN"));
+
+            ObservableList<Person> tableData = table.getItems();
+            tableData.add(testPerson);
+            table.getSelectionModel().select(testPerson);
+
+            assertEquals(1, tableData.size(), "Tabela bi trebalo da sadrži tačno jednog korisnika.");
+            assertEquals(testPerson, tableData.get(0), "Dodati korisnik nije isti kao očekivani.");
+
+            helloController.deletePerson(table);
+
+            assertTrue(tableData.isEmpty(), "Tabela bi trebalo da bude prazna nakon brisanja.");
+        } catch (Exception e) {
+            fail("Izuzetak prilikom testiranja metode deletePerson: " + e.getMessage());
+        }
+    }
+
+
 }
