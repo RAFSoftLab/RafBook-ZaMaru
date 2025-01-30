@@ -19,12 +19,12 @@ public class AuthClientTest2 extends ApplicationTest {
 
     @Test
     public void testSuccessfulLogin() {
-        TextField usernameField = lookup(".text-field").query();
-        PasswordField passwordField = lookup(".password-field").query();
-        Button loginButton = lookup(".button").queryButton();
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
 
-        clickOn(usernameField).write("validUsername");
-        clickOn(passwordField).write("validPassword");
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
 
         clickOn(loginButton);
 

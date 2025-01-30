@@ -31,6 +31,7 @@ public class View {
         Label labela = new Label("Username:");
         labela.setStyle("-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:15px;");
         TextField usernameField = new TextField();
+        usernameField.setId("usernameField");
         usernameField.setStyle("-fx-pref-width: 300px;-fx-border-radius:10px;");
 
 
@@ -39,10 +40,12 @@ public class View {
         Label labela2 = new Label("Password:");
         labela2.setStyle("-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:15px;");
         PasswordField passwordField = new PasswordField();
+        passwordField.setId("passwordField");
         passwordField.setStyle("-fx-pref-width: 300px;-fx-border-radius:20px;");
 
 
         Button loginButton = new Button("Login");
+        loginButton.setId("loginButton");
         loginButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:15px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         loginButton.setOnMouseEntered(e -> {
             loginButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:15px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");

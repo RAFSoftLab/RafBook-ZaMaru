@@ -21,4 +21,5 @@ module com.example.demo3 {
     exports com.example.demo3.Controller;
     exports com.example.demo3.Model;
     exports com.example.demo3.view;
+    exports com.example.demo3.repository;
 }
