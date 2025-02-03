@@ -50,6 +50,38 @@ public class PopUpWindowView {
         }
     }
 
+    private void refreshTables() {
+        try {
+
+            List<Person> updatedUsers = ApiClientUser.getUsers();
+
+
+            userData.clear();
+            userData.addAll(updatedUsers);
+
+
+            Person selectedUser = null;
+            for (Person user : updatedUsers) {
+                if (user.getId() == userId) {
+                    selectedUser = user;
+                    break;
+                }
+            }
+
+
+            if (selectedUser != null) {
+                updateRolesTable(selectedUser.getRole());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "Greška pri osvežavanju podataka: " + e.getMessage());
+            alert.show();
+        }
+    }
+
+
     public void setUserId(int userId) {
         this.userId = userId;
         System.out.println("Postavljen ID korisnika: " + this.userId);
@@ -83,7 +115,7 @@ public class PopUpWindowView {
         Button btnAddRole = new Button("Dodaj novu ulogu");
         btnAddRole.setOnAction(e -> {
             helloController.addRoleToTable(tableView, inputField,userId);
-            refreshMainTable();
+            refreshTables();
         });
 
         btnAddRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -107,7 +139,7 @@ public class PopUpWindowView {
         });
         btnDeleteRole.setOnAction(e -> {
             helloController.deleteRoleFromTable(tableView,userId);
-            refreshMainTable();
+            refreshTables();
         });
 
         HBox controlsLayout = new HBox(10, inputField, btnAddRole);
