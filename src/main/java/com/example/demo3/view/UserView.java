@@ -25,17 +25,22 @@ import static com.example.demo3.Controller.ApiClientUser.getUsers;
 
 public class UserView {
     HelloController helloController=new HelloController();
-    PopUpWindowView popUpWindowView=new PopUpWindowView();
+    PopUpWindowView popUpWindowView; // call the constructor here
     Person user;
+
+    ObservableList<Person> userData;
+    FilteredList<Person> filteredData;
+
     public void setUser(Person user) {
         this.user = user;
     }
 
     public VBox createClientTabContent() {
         TableView<Person> table = new TableView<>();
+        table.setId("table");
 
-        ObservableList<Person> userData = FXCollections.observableArrayList();
-        FilteredList<Person> filteredData = new FilteredList<>(userData, p -> true);
+        userData = FXCollections.observableArrayList();
+        filteredData = new FilteredList<>(userData, p -> true);
 
         try {
             List<Person> users = getUsers();
@@ -47,6 +52,9 @@ public class UserView {
         table.setItems(filteredData);
 
         helloController.setTable(table);
+
+        popUpWindowView = new PopUpWindowView();
+        popUpWindowView.setMainTableAndData(table, userData, filteredData);
 
         TableColumn<Person, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -79,6 +87,7 @@ public class UserView {
 
                 if (popUpWindowView != null) {
                     popUpWindowView.updateRolesTable(roles);
+
                     popUpWindowView.setUserId(selectedUserId);
                 }
             } else {
@@ -113,18 +122,23 @@ public class UserView {
 
         TextField firstNameField = new TextField();
         firstNameField.setPromptText("Ime");
+        firstNameField.setId("firstNameField");
 
         TextField lastNameField = new TextField();
         lastNameField.setPromptText("Prezime");
+        lastNameField.setId("lastNameField");
 
-        TextField usernameField = new TextField();
-        usernameField.setPromptText("Username");
+        TextField usernameField2 = new TextField();
+        usernameField2.setPromptText("Username");
+        usernameField2.setId("username2");
 
         TextField emailField = new TextField();
         emailField.setPromptText("Email");
+        emailField.setId("email");
 
         TextField roleField = new TextField();
         roleField.setPromptText("role");
+
 
         table.setRowFactory(tv -> {
             TableRow<Person> row = new TableRow<>();
@@ -135,7 +149,7 @@ public class UserView {
                     // Popuni polja za unos sa podacima selektovanog korisnika
                     firstNameField.setText(selectedPerson.getFirstName());
                     lastNameField.setText(selectedPerson.getLastName());
-                    usernameField.setText(selectedPerson.getUsername());
+                    usernameField2.setText(selectedPerson.getUsername());
                     emailField.setText(selectedPerson.getEmail());
                     roleField.setText(String.join(", ", selectedPerson.getRole()));
 
@@ -158,7 +172,7 @@ public class UserView {
         addButton.setOnAction(e -> {
             if (firstNameField.getText().isEmpty() ||
                     lastNameField.getText().isEmpty() ||
-                    usernameField.getText().isEmpty() ||
+                    usernameField2.getText().isEmpty() ||
                     emailField.getText().isEmpty() /*||
                     roleField.getText().isEmpty()*/) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
@@ -167,7 +181,7 @@ public class UserView {
             }
             MainRepository.getInstance().put("firstName", firstNameField.getText());
             MainRepository.getInstance().put("lastName", lastNameField.getText());
-            MainRepository.getInstance().put("password", usernameField.getText());
+            MainRepository.getInstance().put("password", usernameField2.getText());
             MainRepository.getInstance().put("email", emailField.getText());
             //MainRepository.getInstance().put("role", roleField.getText());
             MainRepository.getInstance().put("mac", "no mac address");
@@ -177,13 +191,14 @@ public class UserView {
 
             firstNameField.clear();
             lastNameField.clear();
-            usernameField.clear();
+            usernameField2.clear();
             emailField.clear();
             //roleField.clear();
 
         });
 
         Button deleteButton = new Button("Obriši");
+        deleteButton.setId("deleteButton");
         deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         deleteButton.setOnMouseEntered(e -> {
             deleteButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -197,11 +212,12 @@ public class UserView {
         deleteButton.setOnAction(e->helloController.deletePerson(table));
 
         Button editButton = new Button("Izmeni");
+        editButton.setId("editButton");
 
         editButton.setOnAction(e -> {
             if (firstNameField.getText().isEmpty() ||
                     lastNameField.getText().isEmpty() ||
-                    usernameField.getText().isEmpty() ||
+                    usernameField2.getText().isEmpty() ||
                     emailField.getText().isEmpty() ||
                     roleField.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
@@ -225,7 +241,7 @@ public class UserView {
 
                 selectedPerson.setFirstName(firstNameField.getText());
                 selectedPerson.setLastName(lastNameField.getText());
-                selectedPerson.setUsername(usernameField.getText());
+                selectedPerson.setUsername(usernameField2.getText());
                 selectedPerson.setEmail(emailField.getText());
                 selectedPerson.setRole(Arrays.asList(roleField.getText().split(", ")));
                 dto=helloController.convertPersonToNewUserDTO(selectedPerson);
@@ -240,7 +256,7 @@ public class UserView {
 
                     firstNameField.clear();
                     lastNameField.clear();
-                    usernameField.clear();
+                    usernameField2.clear();
                     emailField.clear();
                     roleField.clear();
                 } else {
@@ -280,7 +296,7 @@ public class UserView {
         image3.setFitWidth(200);
         image3.setPreserveRatio(true);
 
-        HBox inputLayout = new HBox(10, firstNameField, lastNameField,usernameField, emailField, addButton,editButton,deleteButton,roleButton);
+        HBox inputLayout = new HBox(10, firstNameField, lastNameField,usernameField2, emailField,roleField, addButton,editButton,deleteButton,roleButton);
         VBox vbox = new VBox(10, new Label("Pretraga:"),searchField, table, inputLayout,image3);
         vbox.setStyle("-fx-background-color:white;");
         return vbox;

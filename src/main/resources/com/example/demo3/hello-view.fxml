@@ -13,8 +13,8 @@
   <TextField fx:id="id" promptText="ID"/>
   <TextField fx:id="firstNameField" promptText="Ime"/>
   <TextField fx:id="lastNameField" promptText="Prezime"/>
-  <TextField fx:id="usernameField" promptText="Username"/>
-  <TextField fx:id="emailField" promptText="Email"/>
+  <TextField fx:id="username2" promptText="Username"/>
+  <TextField fx:id="email" promptText="Email"/>
   <TextField fx:id="roleField" promptText="Role"/>
 
   <Button fx:id="addButton" text="Dodaj" onAction="#addPerson"/>

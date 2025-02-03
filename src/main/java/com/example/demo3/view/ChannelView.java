@@ -22,6 +22,7 @@ public class ChannelView {
     HelloController helloController=new HelloController();
     public VBox createChannelTabContent() {
         TableView<Channel> table2 = new TableView<>();
+        table2.setId("table2");
 
         ObservableList<Channel> channelData = FXCollections.observableArrayList();
         FilteredList<Channel> filteredData = new FilteredList<>(channelData, p -> true);
@@ -72,11 +73,14 @@ public class ChannelView {
 
         TextField nameField = new TextField();
         nameField.setPromptText("Naziv");
+        nameField.setId("name");
 
         TextField descriptionField = new TextField();
         descriptionField.setPromptText("Opis");
+        descriptionField.setId("description");
 
         Button addButton2 = new Button("Dodaj");
+        addButton2.setId("addButton2");
         addButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         addButton2.setOnMouseEntered(e -> {
             addButton2.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");

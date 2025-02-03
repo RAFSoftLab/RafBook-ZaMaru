@@ -6,6 +6,7 @@ import com.example.demo3.Model.Person;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -24,6 +25,31 @@ public class PopUpWindowView {
     private boolean isColumnAdded = false;
     HelloController helloController=new HelloController();
     int userId;
+    private TableView<Person> mainTable;
+
+    private ObservableList<Person> userData;
+    private FilteredList<Person> filteredData;
+
+    public void setMainTableAndData(TableView<Person> table,
+                                    ObservableList<Person> userData,
+                                    FilteredList<Person> filteredData) {
+        this.mainTable = table;
+        this.userData = userData;
+        this.filteredData = filteredData;
+    }
+
+    private void refreshMainTable() {
+        if (mainTable != null) {
+            try {
+                List<Person> updatedUsers = ApiClientUser.getUsers();
+                mainTable.setItems(FXCollections.observableArrayList(updatedUsers));
+                mainTable.refresh();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void setUserId(int userId) {
         this.userId = userId;
         System.out.println("Postavljen ID korisnika: " + this.userId);
@@ -57,6 +83,7 @@ public class PopUpWindowView {
         Button btnAddRole = new Button("Dodaj novu ulogu");
         btnAddRole.setOnAction(e -> {
             helloController.addRoleToTable(tableView, inputField,userId);
+            refreshMainTable();
         });
 
         btnAddRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -80,6 +107,7 @@ public class PopUpWindowView {
         });
         btnDeleteRole.setOnAction(e -> {
             helloController.deleteRoleFromTable(tableView,userId);
+            refreshMainTable();
         });
 
         HBox controlsLayout = new HBox(10, inputField, btnAddRole);

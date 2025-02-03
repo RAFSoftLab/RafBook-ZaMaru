@@ -38,4 +38,10 @@ public class AuthClient {
     public static String getToken() {
         return token;
     }
+
+    public static void setToken(String token) {
+        token = token;
+    }
 }
+
+

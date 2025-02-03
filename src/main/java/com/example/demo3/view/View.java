@@ -1,5 +1,4 @@
 package com.example.demo3.view;
-
 import com.example.demo3.Controller.AuthClient;
 import com.example.demo3.HelloController;
 import javafx.geometry.Pos;
@@ -96,6 +95,7 @@ public class View {
     private void goToNextPage(Stage primaryStage) {
 
         TabPane tabPane = new TabPane();
+        tabPane.setId("tabPane");
 
         Tab firstTab = new Tab("Korisnici");
         firstTab.setClosable(false);

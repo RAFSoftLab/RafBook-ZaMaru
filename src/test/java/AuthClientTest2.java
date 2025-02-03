@@ -1,5 +1,8 @@
 import com.example.demo3.HelloApplication;
+import com.example.demo3.Model.Channel;
+import com.example.demo3.Model.Person;
 import com.example.demo3.repository.MainRepository;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -50,4 +53,5 @@ public class AuthClientTest2 extends ApplicationTest {
             return contentText.contains("Pogrešno korisničko ime ili lozinka");
         });
     }
+
 }

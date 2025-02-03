@@ -1,81 +1,115 @@
-import com.example.demo3.Controller.ApiChannel;
 import com.example.demo3.HelloApplication;
-import com.example.demo3.HelloController;
 import com.example.demo3.Model.Channel;
-import com.example.demo3.repository.MainRepository;
+import com.example.demo3.view.ChannelView;
+import com.example.demo3.Controller.AuthClient;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
-
-import java.io.IOException;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
+
 
 public class ApiChannelTest extends ApplicationTest {
 
+    private ChannelView channelView;
     private TableView<Channel> table;
-    private HelloController helloController;
 
     @Override
     public void start(Stage stage) throws Exception {
         HelloApplication helloApp = new HelloApplication();
         helloApp.start(stage);
-
-        table = lookup("table2").queryTableView();
-
     }
+
 
     @Test
-    public void testGetChannelsAndPopulateTable() {
-        try {
-            List<Channel> channels = ApiChannel.getChannels();
+    public void testSearchFunctionality() {
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
 
-            assertNotNull(channels, "Lista kanala ne sme biti null.");
-            assertFalse(channels.isEmpty(), "Lista kanala ne sme biti prazna.");
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
 
-            ObservableList<Channel> tableData = table.getItems();
-            assertNotNull(tableData, "Podaci u tabeli ne smeju biti null.");
-            assertEquals(channels.size(), tableData.size(), "Broj kanala u tabeli ne odgovara broju dobijenih kanala.");
+        clickOn(loginButton);
 
-            for (int i = 0; i < channels.size(); i++) {
-                Channel expected = channels.get(i);
-                Channel actual = tableData.get(i);
+        TabPane tabPane = lookup("#tabPane").query();
+        tabPane.getSelectionModel().select(1);
 
-                assertEquals(expected.getId(), actual.getId(), "ID kanala se ne poklapa.");
-                assertEquals(expected.getName(), actual.getName(), "Ime kanala se ne poklapa.");
-                assertEquals(expected.getDescription(), actual.getDescription(), "Opis kanala se ne poklapa.");
-            }
-        } catch (IOException e) {
-            fail("Izuzetak pri pozivu metode getChannels: " + e.getMessage());
-        }
+        TableView<Channel> table2 = (TableView<Channel>) lookup("#table2").query();
+        assertNotNull(table2, "Tabela nije pronađena.");
+
+        clickOn("Pretraga:").write("General");
+
+        ObservableList<Channel> items = table2.getItems();
+        boolean found = items.stream().anyMatch(channel ->
+                channel.getName().contains("General"));
+
+        assertTrue(found, "Pretraga nije pronašla kanal sa nazivom 'Novi Kanal'.");
     }
+
+
+
+    @Test
+    public void testTableIsNotEmpty() {
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
+
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
+
+        clickOn(loginButton);
+
+        TabPane tabPane = lookup("#tabPane").query();
+        tabPane.getSelectionModel().select(1);
+
+        TableView<Channel> table2 = (TableView<Channel>) lookup("#table2").query();
+
+        assertNotNull(table2, "Tabela nije pronađena.");
+
+        ObservableList<Channel> items = table2.getItems();
+
+        assertNotNull(items, "Podaci u tabeli ne smeju biti null.");
+        assertFalse(items.isEmpty(), "Tabela kanala ne sme biti prazna.");
+    }
+
     @Test
     public void testAddChannel() {
-        try {
-            MainRepository.getInstance().put("name", "TestChannelName");
-            MainRepository.getInstance().put("description", "This is a test channel description.");
 
-            helloController.addChannel();
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
 
-            ObservableList<Channel> tableData = table.getItems();
-            assertNotNull(tableData, "Tabela kanala ne sme biti null.");
-            assertFalse(tableData.isEmpty(), "Tabela kanala ne sme biti prazna.");
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
 
-            Channel addedChannel = tableData.stream()
-                    .filter(channel -> "TestChannelName".equals(channel.getName()) &&
-                            "This is a test channel description.".equals(channel.getDescription()))
-                    .findFirst()
-                    .orElse(null);
+        clickOn(loginButton);
 
-            assertNotNull(addedChannel, "Dodati kanal nije pronađen u tabeli.");
-            assertEquals("TestChannelName", addedChannel.getName(), "Ime kanala se ne poklapa.");
-            assertEquals("This is a test channel description.", addedChannel.getDescription(), "Opis kanala se ne poklapa.");
-        } catch (Exception e) {
-            fail("Izuzetak prilikom testiranja metode addChannel: " + e.getMessage());
-        }
+        TabPane tabPane = lookup("#tabPane").query();
+        tabPane.getSelectionModel().select(1);
+
+        TextField nameField = (TextField) lookup("#name").nth(0).query();
+        TextField descriptionField = (TextField) lookup("#description").nth(1).query();
+
+        clickOn(nameField).write("Novi Kanal");
+        clickOn(descriptionField).write("Opis novog kanala");
+
+        clickOn("Dodaj");
+
+
+        TableView<Channel> table2 = (TableView<Channel>) lookup("#table2").query();
+        assertNotNull(table2, "Tabela nije pronađena.");
+
+        ObservableList<Channel> items = table2.getItems();
+        assertNotNull(items, "Podaci u tabeli ne smeju biti null.");
+        assertTrue(items.size() > 0, "Tabela ne sadrži nove kanale.");
+
+        boolean found = items.stream().anyMatch(channel ->
+                channel.getName().equals("Novi Kanal") && channel.getDescription().equals("Opis novog kanala"));
+
+        assertTrue(found, "Novi kanal nije dodat u tabelu.");
     }
-}
 
+}
