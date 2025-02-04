@@ -146,7 +146,6 @@ public class UserView {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     Person selectedPerson = row.getItem();
 
-                    // Popuni polja za unos sa podacima selektovanog korisnika
                     firstNameField.setText(selectedPerson.getFirstName());
                     lastNameField.setText(selectedPerson.getLastName());
                     usernameField2.setText(selectedPerson.getUsername());
@@ -159,6 +158,7 @@ public class UserView {
         });
 
         Button addButton = new Button("Dodaj");
+        addButton.setId("addButton");
         addButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         addButton.setOnMouseEntered(e -> {
             addButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
