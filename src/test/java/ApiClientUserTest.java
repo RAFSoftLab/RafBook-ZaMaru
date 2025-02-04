@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
+
+import javax.management.relation.Role;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ApiClientUserTest extends ApplicationTest {
@@ -228,4 +231,62 @@ public class ApiClientUserTest extends ApplicationTest {
         sleep(500);
 
     }
+
+    @Test
+    public void testDeleteRole() {
+
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
+
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
+
+        clickOn(loginButton);
+
+        TableView<Person> table = lookup("#table").query();
+        assertNotNull(table, "Tabela nije pronađena.");
+
+        ObservableList<Person> items = table.getItems();
+        assertNotNull(items, "Podaci u tabeli ne smeju biti null.");
+        assertFalse(items.isEmpty(), "Tabela ne sme biti prazna pre brisanja uloge.");
+
+        assertTrue(items.size() >= 1, "Tabela mora imati najmanje jedan red za testiranje.");
+
+        Person userToEdit = items.get(0);
+        table.getSelectionModel().select(0);
+
+        sleep(500);
+
+        assertEquals(userToEdit, table.getSelectionModel().getSelectedItem(), "Korisnik nije selektovan.");
+
+        Button roleButton = lookup("#roleButton").queryButton();
+        clickOn(roleButton);
+
+        sleep(500);
+
+        TableView<Role> popUpTable = lookup("#popUpTable").query();
+        assertNotNull(popUpTable, "Pop-up tabela nije pronađena.");
+
+        ObservableList<Role> popUpItems = popUpTable.getItems();
+        assertNotNull(popUpItems, "Podaci u pop-up tabeli ne smeju biti null.");
+        assertFalse(popUpItems.isEmpty(), "Pop-up tabela ne sme biti prazna pre brisanja uloge.");
+
+        assertTrue(popUpItems.size() >= 1, "Pop-up tabela mora imati najmanje jedan red za testiranje.");
+
+        popUpTable.getSelectionModel().select(0);
+
+        sleep(500);
+
+        assertEquals(popUpItems.get(0), popUpTable.getSelectionModel().getSelectedItem(), "Uloga nije selektovana.");
+
+        Button deleteRoleButton = lookup("#deleteRole").queryButton();
+        clickOn(deleteRoleButton);
+
+        sleep(500);
+    }
+
+
+
+
 }

@@ -101,6 +101,7 @@ public class PopUpWindowView {
         ImageView logoImageView = new ImageView(logoImage);
         Image icon = new Image(getClass().getResource("/images/raf.jpg").toExternalForm());
         popupStage.getIcons().add(icon);
+        tableView.setId("popUpTable");
 
         if (!isColumnAdded) {
             TableColumn<String, String> column1 = new TableColumn<>("Uloge");
@@ -130,6 +131,7 @@ public class PopUpWindowView {
         });
 
         Button btnDeleteRole = new Button("Obrisi ulogu");
+        btnDeleteRole.setId("deleteRole");
 
         btnDeleteRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         btnDeleteRole.setOnMouseEntered(e -> {
