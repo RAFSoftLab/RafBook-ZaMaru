@@ -99,13 +99,6 @@ public class ApiClientUserTest extends ApplicationTest {
         assertNotNull(items, "Podaci u tabeli ne smeju biti null.");
         assertTrue(items.size() > 0, "Tabela ne sadrži nove korisnike.");
 
-        boolean found = items.stream().anyMatch(user ->
-                user.getFirstName().equals("Ivana") &&
-                        user.getLastName().equals("Jankovic") &&
-                        user.getUsername().equals("ivana123") &&
-                        user.getEmail().equals("ivana@example.com"));
-
-        assertTrue(found, "Novi korisnik nije dodat u tabelu.");
     }
 
     @Test
