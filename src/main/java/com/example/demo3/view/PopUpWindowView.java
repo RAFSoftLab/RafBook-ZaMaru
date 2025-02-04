@@ -111,8 +111,10 @@ public class PopUpWindowView {
 
         TextField inputField = new TextField();
         inputField.setPromptText("Upisite ulogu...");
+        inputField.setId("roleField");
 
         Button btnAddRole = new Button("Dodaj novu ulogu");
+        btnAddRole.setId("addRole");
         btnAddRole.setOnAction(e -> {
             helloController.addRoleToTable(tableView, inputField,userId);
             refreshTables();
