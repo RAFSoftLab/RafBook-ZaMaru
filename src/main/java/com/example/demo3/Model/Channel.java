@@ -7,6 +7,7 @@ public class Channel {
     private String name;
     private String description;
     private List<String> messageDTOList;
+    private List<RolePermissionDTO> rolePermissionDTOList;
     private boolean canWrite;
 
     public Channel(){}
@@ -60,6 +61,14 @@ public class Channel {
 
     public void setCanWrite(boolean canWrite) {
         this.canWrite = canWrite;
+    }
+
+    public List<RolePermissionDTO> getRolePermissionDTOList() {
+        return rolePermissionDTOList;
+    }
+
+    public void setRolePermissionDTOList(List<RolePermissionDTO> rolePermissionDTOList) {
+        this.rolePermissionDTOList = rolePermissionDTOList;
     }
 
 }

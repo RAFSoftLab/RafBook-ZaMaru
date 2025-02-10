@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 public class ApiChannel {
         private static final OkHttpClient client = new OkHttpClient();
-        private static final String BASE_URL = "http://192.168.124.28:1524/api/text-channel"; // Endpoint za kanale
+        private static final String BASE_URL = "http://localhost:8080/api/text-channel"; // Endpoint za kanale
         private static final ObjectMapper objectMapper = new ObjectMapper();
 
         public static List<Channel> getChannels() throws IOException {

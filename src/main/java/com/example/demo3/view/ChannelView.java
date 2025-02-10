@@ -2,7 +2,9 @@ package com.example.demo3.view;
 
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.Channel;
+import com.example.demo3.Model.RolePermissionDTO;
 import com.example.demo3.repository.MainRepository;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -15,6 +17,7 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.demo3.Controller.ApiChannel.getChannels;
 
@@ -45,7 +48,16 @@ public class ChannelView {
         TableColumn<Channel, String> descriptionColumn = new TableColumn<>("Opis");
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        table2.getColumns().addAll(idColumn, nameColumn, descriptionColumn);
+        TableColumn<Channel, String> roleColumn = new TableColumn<>("Uloge");
+        roleColumn.setCellValueFactory(cellData -> {
+            List<RolePermissionDTO> roles = cellData.getValue().getRolePermissionDTOList();
+            String rolesAsString = roles.stream()
+                    .map(RolePermissionDTO::getRole) // Uzimamo samo nazive uloga
+                    .collect(Collectors.joining(", ")); // Spajamo u jedan string sa zarezima
+            return new SimpleStringProperty(rolesAsString);
+        });
+
+        table2.getColumns().addAll(idColumn, nameColumn, descriptionColumn,roleColumn);
 
         helloController.setTable2(table2);
 
