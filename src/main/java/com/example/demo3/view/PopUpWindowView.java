@@ -146,7 +146,7 @@ public class PopUpWindowView {
             refreshTables();
         });
 
-        HBox controlsLayout = new HBox(10, inputField, btnAddRole);
+        VBox controlsLayout = new VBox(10, inputField, btnAddRole);
         VBox popupLayout = new VBox(10, tableView, controlsLayout, btnDeleteRole);
         popupLayout.setStyle("-fx-padding: 20;");
         popupLayout.setStyle("-fx-background-color:white;");

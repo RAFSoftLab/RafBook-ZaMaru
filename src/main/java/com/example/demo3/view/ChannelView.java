@@ -2,6 +2,7 @@ package com.example.demo3.view;
 
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.Channel;
+import com.example.demo3.Model.Person;
 import com.example.demo3.Model.RolePermissionDTO;
 import com.example.demo3.repository.MainRepository;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,11 @@ import static com.example.demo3.Controller.ApiChannel.getChannels;
 
 public class ChannelView {
     HelloController helloController=new HelloController();
+    PopUpChannelView popUpChannelView=new PopUpChannelView();
+
+
+
+
     public VBox createChannelTabContent() {
         TableView<Channel> table2 = new TableView<>();
         table2.setId("table2");
@@ -60,6 +67,31 @@ public class ChannelView {
         table2.getColumns().addAll(idColumn, nameColumn, descriptionColumn,roleColumn);
 
         helloController.setTable2(table2);
+
+        popUpChannelView.setMainTableAndData(table2,channelData,filteredData);
+
+        table2.getSelectionModel().selectedItemProperty().addListener((observable, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                int selectedChannelId = newSelection.getId(); // Uzima se ID selektovanog kanala
+                List<RolePermissionDTO> roles = newSelection.getRolePermissionDTOList(); // Uzima se lista uloga kanala
+
+                System.out.println("Uloge selektovanog kanala: " + roles);
+
+                if (popUpChannelView != null) {
+                    // Ažuriranje tabele u pop-up prozoru sa ulogama selektovanog kanala
+                    popUpChannelView.updateRolesTable(roles);
+
+                    // Postavljanje ID-ja selektovanog kanala
+                    popUpChannelView.setChannelId(selectedChannelId);
+                }
+            } else {
+                System.out.println("Nijedan kanal nije selektovan.");
+                if (popUpChannelView != null) {
+                    // Ako nije selektovan kanal, očisti tabelu uloga u pop-up prozoru
+                    popUpChannelView.updateRolesTable(Collections.emptyList());
+                }
+            }
+        });
 
         Label pretraga = new Label("Pretraga:");
 
@@ -134,12 +166,24 @@ public class ChannelView {
             editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
 
+        Button roleButton2=new Button("Uloge");
+        roleButton2.setId("roleButton2");
+        roleButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        roleButton2.setOnMouseEntered(e -> {
+            roleButton2.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+
+        roleButton2.setOnMouseExited(e -> {
+            roleButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+        roleButton2.setOnAction(e -> popUpChannelView.showPopupWindow());
+
         Image image4 = new Image(getClass().getResource("/images/raf3.png").toExternalForm());
         ImageView image5 = new ImageView(image4);
         image5.setFitWidth(200);
         image5.setPreserveRatio(true);
 
-        HBox inputLayout = new HBox(10,nameField, descriptionField, addButton2, editButton, deleteButton);
+        HBox inputLayout = new HBox(10,nameField, descriptionField, addButton2, editButton, deleteButton,roleButton2);
         VBox vbox = new VBox(10, pretraga, searchField, table2, inputLayout, image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;
