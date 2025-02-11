@@ -52,32 +52,32 @@ public class PopUpChannelView {
 //        }
 //    }
 
-//    private void refreshTables() {
-//        try {
-//            List<Channel> updatedChannels = ApiChannel.getChannels();
-//
-//            channelData.clear();
-//            channelData.addAll(updatedChannels);
-//
-//            Channel selectedChannel = null;
-//            for (Channel channel : updatedChannels) {
-//                if (channel.getId() == channelId) {
-//                    selectedChannel = channel;
-//                    break;
-//                }
-//            }
-//
-//            if (selectedChannel != null) {
-//                updateRolesTable(selectedChannel.getRolePermissionDTOList());
-//            }
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Alert alert = new Alert(Alert.AlertType.ERROR,
-//                    "Greška pri osvežavanju podataka: " + e.getMessage());
-//            alert.show();
-//        }
-//    }
+    private void refreshTables() {
+        try {
+            List<Channel> updatedChannels = ApiChannel.getChannels();
+
+            channelData.clear();
+            channelData.addAll(updatedChannels);
+
+            Channel selectedChannel = null;
+            for (Channel channel : updatedChannels) {
+                if (channel.getId() == channelId) {
+                    selectedChannel = channel;
+                    break;
+                }
+            }
+
+            if (selectedChannel != null) {
+                updateRolesTable(selectedChannel.getRolePermissionDTOList());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    "Greška pri osvežavanju podataka: " + e.getMessage());
+            alert.show();
+        }
+    }
 
     public void setChannelId(int channelId) {
         this.channelId = channelId;
@@ -111,6 +111,7 @@ public class PopUpChannelView {
 
         btnAddRole.setOnAction(e -> {
             helloController.addRoleToChannel(tableView, inputField,channelId);
+            refreshTables();
         });
 
         btnAddRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
