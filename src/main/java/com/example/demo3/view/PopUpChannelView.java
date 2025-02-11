@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PopUpChannelView {
 
@@ -39,18 +38,6 @@ public class PopUpChannelView {
         this.channelData = channelData;
         this.filteredData = filteredData;
     }
-
-//    private void refreshMainTable() {
-//        if (mainTable != null) {
-//            try {
-//                List<Channel> updatedChannels = ApiChannel.getChannels();
-//                mainTable.setItems(FXCollections.observableArrayList(updatedChannels));
-//                mainTable.refresh();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     private void refreshTables() {
         try {

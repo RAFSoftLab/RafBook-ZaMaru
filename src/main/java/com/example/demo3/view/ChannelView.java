@@ -5,6 +5,7 @@ import com.example.demo3.Model.Channel;
 import com.example.demo3.Model.Person;
 import com.example.demo3.Model.RolePermissionDTO;
 import com.example.demo3.repository.MainRepository;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.demo3.Controller.ApiChannel.getCategories;
 import static com.example.demo3.Controller.ApiChannel.getChannels;
 
 public class ChannelView {
@@ -72,22 +74,19 @@ public class ChannelView {
 
         table2.getSelectionModel().selectedItemProperty().addListener((observable, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                int selectedChannelId = newSelection.getId(); // Uzima se ID selektovanog kanala
-                List<RolePermissionDTO> roles = newSelection.getRolePermissionDTOList(); // Uzima se lista uloga kanala
+                int selectedChannelId = newSelection.getId();
+                List<RolePermissionDTO> roles = newSelection.getRolePermissionDTOList();
 
                 System.out.println("Uloge selektovanog kanala: " + roles);
 
                 if (popUpChannelView != null) {
-                    // Ažuriranje tabele u pop-up prozoru sa ulogama selektovanog kanala
                     popUpChannelView.updateRolesTable(roles);
 
-                    // Postavljanje ID-ja selektovanog kanala
                     popUpChannelView.setChannelId(selectedChannelId);
                 }
             } else {
                 System.out.println("Nijedan kanal nije selektovan.");
                 if (popUpChannelView != null) {
-                    // Ako nije selektovan kanal, očisti tabelu uloga u pop-up prozoru
                     popUpChannelView.updateRolesTable(Collections.emptyList());
                 }
             }
@@ -179,8 +178,21 @@ public class ChannelView {
         roleButton2.setOnAction(e -> popUpChannelView.showPopupWindow());
 
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.getItems().addAll("Opcija 1", "Opcija 2", "Opcija 3", "Opcija 4");
-        comboBox.setValue("Opcija 1");
+        new Thread(() -> {
+            try {
+                List<String> categories = getCategories(); // Poziv metode za dohvat kategorija
+
+                // Ažuriranje GUI-ja mora biti na JavaFX Application Thread-u
+                Platform.runLater(() -> {
+                    comboBox.getItems().setAll(categories);
+                    if (!categories.isEmpty()) {
+                        comboBox.setValue(categories.get(0)); // Postavi prvu kategoriju kao podrazumevanu
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
         comboBox.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
 
         Image image4 = new Image(getClass().getResource("/images/raf3.png").toExternalForm());

@@ -93,6 +93,22 @@ public class ApiChannel {
         }
     }
 
+    public static List<String> getCategories() throws IOException {
+        Request request = new Request.Builder()
+                .url("http://localhost:8080/api/categories/names")
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String jsonResponse = response.body().string();
+                return objectMapper.readValue(jsonResponse, new TypeReference<List<String>>() {});
+            } else {
+                throw new IOException("Unexpected code " + response);
+            }
+        }
+    }
+
 
 
 
