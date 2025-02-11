@@ -92,6 +92,14 @@ public class ChannelView {
             }
         });
 
+        Label kanali=new Label("Kanali");
+        kanali.setStyle("-fx-text-fill:#173669;-fx-font-weight:bold;");
+        Label kategorije=new Label("Kategorije");
+        kategorije.setStyle("-fx-text-fill:#173669;-fx-font-weight:bold;");
+
+        Separator separator = new Separator();
+        separator.setPrefWidth(150);
+
         Label pretraga = new Label("Pretraga:");
 
         TextField searchField = new TextField();
@@ -121,6 +129,19 @@ public class ChannelView {
         TextField descriptionField = new TextField();
         descriptionField.setPromptText("Opis");
         descriptionField.setId("description");
+
+        TextField categoryField = new TextField();
+        categoryField.setPromptText("Naziv");
+
+        Button addCategory= new Button("Dodaj");
+        addCategory.setId("addButton2");
+        addCategory.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        addCategory.setOnMouseEntered(e -> {
+            addCategory.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
+        addCategory.setOnMouseExited(e -> {
+            addCategory.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
+        });
 
         Button addButton2 = new Button("Dodaj");
         addButton2.setId("addButton2");
@@ -180,13 +201,12 @@ public class ChannelView {
         ComboBox<String> comboBox = new ComboBox<>();
         new Thread(() -> {
             try {
-                List<String> categories = getCategories(); // Poziv metode za dohvat kategorija
+                List<String> categories = getCategories();
 
-                // Ažuriranje GUI-ja mora biti na JavaFX Application Thread-u
                 Platform.runLater(() -> {
                     comboBox.getItems().setAll(categories);
                     if (!categories.isEmpty()) {
-                        comboBox.setValue(categories.get(0)); // Postavi prvu kategoriju kao podrazumevanu
+                        comboBox.setValue(categories.get(0));
                     }
                 });
             } catch (IOException e) {
@@ -201,7 +221,8 @@ public class ChannelView {
         image5.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox, addButton2, editButton, deleteButton,roleButton2);
-        VBox vbox = new VBox(10, pretraga, searchField, table2, inputLayout, image5);
+        HBox categoryLayout=new HBox(10,categoryField,addCategory);
+        VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator, image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;
 
