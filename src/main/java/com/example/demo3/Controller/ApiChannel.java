@@ -61,6 +61,36 @@ public class ApiChannel {
 
             return response.code() == 200;
         }
+
+    }
+
+    public static boolean addRolesToChannel(long channelId, List<String> roles) throws IOException {
+        String url = BASE_URL + "/add-roles/" + channelId;
+
+        String json = objectMapper.writeValueAsString(roles);
+
+        System.out.println("Request URL: " + url);
+        System.out.println("Request JSON: " + json);
+
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                json
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body() != null ? response.body().string() : "";
+            System.out.println("Response Code: " + response.code());
+            System.out.println("Response Body: " + responseBody);
+
+            return response.code() == 200;
+        }
     }
 
 

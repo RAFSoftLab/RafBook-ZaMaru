@@ -178,12 +178,17 @@ public class ChannelView {
         });
         roleButton2.setOnAction(e -> popUpChannelView.showPopupWindow());
 
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.getItems().addAll("Opcija 1", "Opcija 2", "Opcija 3", "Opcija 4");
+        comboBox.setValue("Opcija 1");
+        comboBox.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
+
         Image image4 = new Image(getClass().getResource("/images/raf3.png").toExternalForm());
         ImageView image5 = new ImageView(image4);
         image5.setFitWidth(200);
         image5.setPreserveRatio(true);
 
-        HBox inputLayout = new HBox(10,nameField, descriptionField, addButton2, editButton, deleteButton,roleButton2);
+        HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox, addButton2, editButton, deleteButton,roleButton2);
         VBox vbox = new VBox(10, pretraga, searchField, table2, inputLayout, image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;

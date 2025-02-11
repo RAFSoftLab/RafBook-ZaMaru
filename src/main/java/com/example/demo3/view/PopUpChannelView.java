@@ -108,6 +108,11 @@ public class PopUpChannelView {
 
         Button btnAddRole = new Button("Dodaj novu ulogu");
         btnAddRole.setId("addRole2");
+
+        btnAddRole.setOnAction(e -> {
+            helloController.addRoleToChannel(tableView, inputField,channelId);
+        });
+
         btnAddRole.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         btnAddRole.setOnMouseEntered(e -> {
             btnAddRole.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");

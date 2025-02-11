@@ -375,4 +375,36 @@ public class HelloController {
         public ObservableList<Person> getUserData () {
             return userData;
         }
+
+    public void addRoleToChannel(TableView<String> tableView, TextField inputField, long channelId) {
+        String newRole = inputField.getText().trim();
+
+        if (!newRole.isEmpty()) {
+            try {
+                List<String> roles = new ArrayList<>();
+                roles.add(newRole);
+
+                boolean success = ApiChannel.addRolesToChannel(channelId, roles);
+
+                if (success) {
+                    tableView.getItems().add(newRole);
+                    inputField.clear();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Uloga je uspešno dodata kanalu.");
+                    alert.show();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Dodavanje uloge kanalu nije uspelo. Proverite podatke.");
+                    alert.show();
+                }
+            } catch (IllegalArgumentException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Neispravan unos: " + e.getMessage());
+                alert.show();
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške prilikom komunikacije sa serverom: " + e.getMessage());
+                alert.show();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Morate uneti ulogu.");
+            alert.show();
+        }
+    }
     }
