@@ -3,6 +3,7 @@ package com.example.demo3.Model;
 public class NewChannelDTO {
     private String name;
     private String description;
+    private String category;
 
 
 
@@ -19,4 +20,11 @@ public class NewChannelDTO {
     public void setDescription(String description){
         this.description=description;
     }
+    public String getCategory() {
+        return category;
+    }
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
 }

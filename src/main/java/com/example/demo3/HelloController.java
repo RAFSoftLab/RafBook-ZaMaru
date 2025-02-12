@@ -328,10 +328,12 @@ public class HelloController {
             try {
                 String name = MainRepository.getInstance().get("name");
                 String description = MainRepository.getInstance().get("description");
+                String category = MainRepository.getInstance().get("category");
 
                 NewChannelDTO newChannel = new NewChannelDTO();
                 newChannel.setName(name);
                 newChannel.setDescription(description);
+                newChannel.setCategory(category);
 
                 boolean success = ApiChannel.addChannel(newChannel);
 

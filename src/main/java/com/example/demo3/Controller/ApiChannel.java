@@ -33,10 +33,11 @@ public class ApiChannel {
         }
 
     public static boolean addChannel(NewChannelDTO newChannelData) throws IOException {
-        String url = "http://192.168.124.28:1524/api/text-channel";
+        String url = "http://localhost:8080/api/text-channel";
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", newChannelData.getName());
         jsonObject.put("description", newChannelData.getDescription());
+        jsonObject.put("category",newChannelData.getCategory());
         String json = jsonObject.toString();
 
         System.out.println("Request URL: " + url);

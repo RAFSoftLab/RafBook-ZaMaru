@@ -100,6 +100,9 @@ public class ChannelView {
         Separator separator = new Separator();
         separator.setPrefWidth(150);
 
+        Separator separator2 = new Separator();
+        separator2.setPrefWidth(150);
+
         Label pretraga = new Label("Pretraga:");
 
         TextField searchField = new TextField();
@@ -133,6 +136,24 @@ public class ChannelView {
         TextField categoryField = new TextField();
         categoryField.setPromptText("Naziv");
 
+        ComboBox<String> comboBox = new ComboBox<>();
+        new Thread(() -> {
+            try {
+                List<String> categories = getCategories();
+
+                Platform.runLater(() -> {
+                    comboBox.getItems().setAll(categories);
+                    if (!categories.isEmpty()) {
+                        comboBox.setValue(categories.get(0));
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        comboBox.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
+
+
         Button addCategory= new Button("Dodaj");
         addCategory.setId("addButton2");
         addCategory.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -153,19 +174,22 @@ public class ChannelView {
             addButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
         addButton2.setOnAction(e -> {
-            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
+            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || comboBox.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena,ukljucujuci kategoriju");
                 alert.show();
                 return;
             }
 
             MainRepository.getInstance().put("name", nameField.getText());
             MainRepository.getInstance().put("description", descriptionField.getText());
+            MainRepository.getInstance().put("category", comboBox.getValue());
 
             helloController.addChannel();
             nameField.clear();
             descriptionField.clear();
+            comboBox.getSelectionModel().clearSelection();
         });
+
 
         Button deleteButton = new Button("Obriši");
         deleteButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
@@ -198,23 +222,6 @@ public class ChannelView {
         });
         roleButton2.setOnAction(e -> popUpChannelView.showPopupWindow());
 
-        ComboBox<String> comboBox = new ComboBox<>();
-        new Thread(() -> {
-            try {
-                List<String> categories = getCategories();
-
-                Platform.runLater(() -> {
-                    comboBox.getItems().setAll(categories);
-                    if (!categories.isEmpty()) {
-                        comboBox.setValue(categories.get(0));
-                    }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        comboBox.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
-
         Image image4 = new Image(getClass().getResource("/images/raf3.png").toExternalForm());
         ImageView image5 = new ImageView(image4);
         image5.setFitWidth(200);
@@ -222,7 +229,7 @@ public class ChannelView {
 
         HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox, addButton2, editButton, deleteButton,roleButton2);
         HBox categoryLayout=new HBox(10,categoryField,addCategory);
-        VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator, image5);
+        VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator2,image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;
 
