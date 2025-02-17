@@ -136,6 +136,9 @@ public class ChannelView {
         TextField categoryField = new TextField();
         categoryField.setPromptText("Naziv");
 
+        TextField categoryField2 = new TextField();
+        categoryField2.setPromptText("Opis");
+
         ComboBox<String> comboBox = new ComboBox<>();
         new Thread(() -> {
             try {
@@ -163,6 +166,24 @@ public class ChannelView {
         addCategory.setOnMouseExited(e -> {
             addCategory.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
+
+        addCategory.setOnAction(e -> {
+            if (categoryField.getText().isEmpty() || categoryField2.getText().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena,ukljucujuci kategoriju");
+                alert.show();
+                return;
+            }
+
+            MainRepository.getInstance().put("name", categoryField.getText());
+            MainRepository.getInstance().put("description", categoryField.getText());
+
+            helloController.addCategory();
+            categoryField.clear();
+            categoryField2.clear();
+
+        });
+
+
 
         Button addButton2 = new Button("Dodaj");
         addButton2.setId("addButton2");
@@ -228,7 +249,7 @@ public class ChannelView {
         image5.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox, addButton2, editButton, deleteButton,roleButton2);
-        HBox categoryLayout=new HBox(10,categoryField,addCategory);
+        HBox categoryLayout=new HBox(10,categoryField,categoryField2,addCategory);
         VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator2,image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;

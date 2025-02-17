@@ -1,6 +1,7 @@
 package com.example.demo3;
 
 import com.example.demo3.Controller.ApiChannel;
+import com.example.demo3.Controller.ApiClientCategory;
 import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Controller.AuthClient;
 import com.example.demo3.Model.*;
@@ -336,6 +337,7 @@ public class HelloController {
                 boolean success = ApiChannel.addChannel(newChannel);
 
                 if (success) {
+                    Alert alert1=new Alert(Alert.AlertType.CONFIRMATION,"Channel added successfully");
                     System.out.println("Channel added successfully, refreshing table...");
 
                     List<Channel> channels = ApiChannel.getChannels();
@@ -346,7 +348,7 @@ public class HelloController {
                     channelData = FXCollections.observableArrayList(channels);
 
                     if (table2 != null) {
-                        table2.setItems(null); // Clear the items first
+                        table2.setItems(null);
                         table2.setItems(channelData);
                         table2.refresh();
                         System.out.println("Table refreshed with " + table2.getItems().size() + " items");
@@ -450,4 +452,28 @@ public class HelloController {
             alert.show();
         }
     }
+
+    public void addCategory() {
+        try {
+            String name = MainRepository.getInstance().get("name");
+            String description = MainRepository.getInstance().get("description");
+
+            NewCategoryDTO newCategory = new NewCategoryDTO();
+            newCategory.setName(name);
+            newCategory.setDescription(description);
+
+            boolean success = ApiClientCategory.addCategory(newCategory);
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Category added successfully");
+                alert.show();
+                System.out.println("Uspešno dodata kategorija");
+            }
+        } catch (IOException e) {
+            Alert alert3 = new Alert(Alert.AlertType.ERROR, "An error occurred: " + e.getMessage());
+            alert3.showAndWait();
+            System.err.println("Greška prilikom dodavanja kategorije: " + e.getMessage());
+        }
     }
+
+}
