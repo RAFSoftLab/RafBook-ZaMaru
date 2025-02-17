@@ -3,10 +3,7 @@ package com.example.demo3;
 import com.example.demo3.Controller.ApiChannel;
 import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.Controller.AuthClient;
-import com.example.demo3.Model.Channel;
-import com.example.demo3.Model.NewChannelDTO;
-import com.example.demo3.Model.NewUserDTO;
-import com.example.demo3.Model.Person;
+import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
 import com.example.demo3.view.View;
 import javafx.collections.transformation.FilteredList;
@@ -29,6 +26,7 @@ import java.net.URL;
 import java.util.*;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static com.example.demo3.Controller.ApiClientUser.*;
 
@@ -377,6 +375,49 @@ public class HelloController {
         public ObservableList<Person> getUserData () {
             return userData;
         }
+
+    public void removeRoleFromChannel(TableView<RolePermissionDTO> rolesTableView, long channelId) {
+        RolePermissionDTO selectedRoleDTO = rolesTableView.getSelectionModel().getSelectedItem();
+        System.out.println("selektovani korisnici:"+selectedRoleDTO);
+
+        if (selectedRoleDTO != null) {
+
+            String selectedRole = selectedRoleDTO.getRole();
+            System.out.println("ROLA JE "+selectedRole);
+
+            if (selectedRole != null && !selectedRole.isEmpty()) {
+                try {
+                    List<String> rolesToRemove = new ArrayList<>();
+                    rolesToRemove.add(selectedRole);
+
+                    boolean success = ApiChannel.removeRolesFromChannel(channelId, rolesToRemove);
+
+                    if (success) {
+                        rolesTableView.getItems().remove(selectedRoleDTO);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Uloga je uspešno uklonjena sa kanala.");
+                        alert.show();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Uklanjanje uloge sa kanala nije uspelo. Proverite podatke.");
+                        alert.show();
+                    }
+                } catch (IllegalArgumentException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Neispravan unos: " + e.getMessage());
+                    alert.show();
+                } catch (IOException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške prilikom komunikacije sa serverom: " + e.getMessage());
+                    alert.show();
+                }
+            } else {
+                // Show warning if no role is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Morate selektovati ulogu za uklanjanje.");
+                alert.show();
+            }
+        } else {
+            // Show warning if no role is selected
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Morate selektovati ulogu za uklanjanje.");
+            alert.show();
+        }
+    }
 
     public void addRoleToChannel(TableView<String> tableView, TextField inputField, long channelId) {
         String newRole = inputField.getText().trim();

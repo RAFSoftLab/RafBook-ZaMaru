@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.demo3.Controller.ApiChannel.getCategories;
+import static com.example.demo3.Controller.ApiClientCategory.getCategories;
 import static com.example.demo3.Controller.ApiChannel.getChannels;
 
 public class ChannelView {

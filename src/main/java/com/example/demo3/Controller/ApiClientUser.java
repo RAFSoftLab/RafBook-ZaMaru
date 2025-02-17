@@ -207,7 +207,7 @@ public class ApiClientUser {
 
         Request request = new Request.Builder()
                 .url(url)
-                .patch(RequestBody.create(null, new byte[0])) // Za PATCH koristimo prazan telo
+                .patch(RequestBody.create(null, new byte[0]))
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
 

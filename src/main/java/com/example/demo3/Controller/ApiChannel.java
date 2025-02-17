@@ -77,6 +77,7 @@ public class ApiChannel {
                 MediaType.parse("application/json; charset=utf-8"),
                 json
         );
+        System.out.println("BODY"+body);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -93,22 +94,38 @@ public class ApiChannel {
             return response.code() == 200;
         }
     }
+    public static boolean removeRolesFromChannel(long channelId, List<String> roles) throws IOException {
+        String url = BASE_URL + "/remove-roles/" + channelId;
 
-    public static List<String> getCategories() throws IOException {
+        String json = objectMapper.writeValueAsString(roles);
+
+        System.out.println("Request URL: " + url);
+        System.out.println("Request JSON: " + json);
+
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                json
+        );
+
         Request request = new Request.Builder()
-                .url("http://localhost:8080/api/categories/names")
+                .url(url)
+                .patch(body)
+                .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .build();
+        System.out.println("ZAHTEV"+request);
+        System.out.println("BODY"+body);
 
         try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                String jsonResponse = response.body().string();
-                return objectMapper.readValue(jsonResponse, new TypeReference<List<String>>() {});
-            } else {
-                throw new IOException("Unexpected code " + response);
-            }
+            String responseBody = response.body() != null ? response.body().string() : "";
+            System.out.println("Response Code: " + response.code());
+            System.out.println("Response Body: " + responseBody);
+
+            return response.code() == 200;
         }
     }
+
+
 
 
 
