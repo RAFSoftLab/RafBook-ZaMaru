@@ -15,7 +15,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,6 +100,31 @@ public class UserView {
             }
         });
 
+        Button importButton=new Button("IMPORT");
+        importButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px;-fx-margin-top:10px;-fx-padding: 0 15px;");
+        importButton.setOnMouseEntered(e -> {
+            importButton.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px;-fx-margin-top:10px;-fx-padding: 0 15px;");
+        });
+
+        importButton.setOnMouseExited(e -> {
+            importButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px;-fx-margin-top:10px;-fx-padding: 0 15px;");
+        });
+
+        importButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Select a File");
+
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("All Files", "*.*"),
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                    new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+            );
+
+            File selectedFile = fileChooser.showOpenDialog(null);
+            if (selectedFile != null) {
+                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            }
+        });
 
 
         TextField searchField = new TextField();
@@ -298,7 +325,7 @@ public class UserView {
         image3.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10, firstNameField, lastNameField,usernameField2, emailField,roleField, addButton,editButton,deleteButton,roleButton);
-        VBox vbox = new VBox(10, new Label("Pretraga:"),searchField, table, inputLayout,image3);
+        VBox vbox = new VBox(10, new Label("Pretraga:"),searchField, table, inputLayout,importButton,image3);
         vbox.setStyle("-fx-background-color:white;");
         return vbox;
     }
