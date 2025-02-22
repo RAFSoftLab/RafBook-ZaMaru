@@ -1,6 +1,7 @@
 package com.example.demo3.view;
 
 import com.example.demo3.Controller.ApiClientUser;
+import com.example.demo3.Controller.JsonParser;
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.Person;
@@ -115,14 +116,14 @@ public class UserView {
             fileChooser.setTitle("Select a File");
 
             fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("All Files", "*.*"),
-                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
-                    new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg")
+                    new FileChooser.ExtensionFilter("JSON Files", "*.json")  // Dodajte filter za JSON fajlove
             );
 
             File selectedFile = fileChooser.showOpenDialog(null);
             if (selectedFile != null) {
                 System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+
+                JsonParser.loadData(selectedFile.getAbsolutePath());
             }
         });
 
