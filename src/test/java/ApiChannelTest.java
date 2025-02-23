@@ -92,12 +92,15 @@ public class ApiChannelTest extends ApplicationTest {
 
         TextField nameField = (TextField) lookup("#name").nth(0).query();
         TextField descriptionField = (TextField) lookup("#description").nth(1).query();
+        ComboBox<String> categoryComboBox = lookup("#categoryComboBox").query();
 
         clickOn(nameField).write("Novi Kanal");
         clickOn(descriptionField).write("Opis novog kanala");
 
-        clickOn("Dodaj");
+        clickOn(categoryComboBox);
+        categoryComboBox.getSelectionModel().select(0);
 
+        clickOn("Dodaj");
 
         TableView<Channel> table2 = (TableView<Channel>) lookup("#table2").query();
         assertNotNull(table2, "Tabela nije pronađena.");
@@ -107,9 +110,36 @@ public class ApiChannelTest extends ApplicationTest {
         assertTrue(items.size() > 0, "Tabela ne sadrži nove kanale.");
 
         boolean found = items.stream().anyMatch(channel ->
-                channel.getName().equals("Novi Kanal") && channel.getDescription().equals("Opis novog kanala"));
+                channel.getName().equals("Novi Kanal") &&
+                        channel.getDescription().equals("Opis novog kanala"));
 
         assertTrue(found, "Novi kanal nije dodat u tabelu.");
+    }
+
+    @Test
+    public void testAddCategory(){
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
+
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
+
+        clickOn(loginButton);
+
+        TabPane tabPane = lookup("#tabPane").query();
+        tabPane.getSelectionModel().select(1);
+
+        TextField categoryField = (TextField) lookup("#catName").nth(0).query();
+        TextField categoryField2 = (TextField) lookup("#catDesc").nth(1).query();
+
+        clickOn(categoryField).write("Nova kategorija");
+        clickOn(categoryField2).write("Opis nove kategorije");
+
+        Button addCategory = lookup("#addButton3").queryButton();
+        clickOn(addCategory);
+
+
     }
 
 }

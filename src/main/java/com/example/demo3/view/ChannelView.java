@@ -135,11 +135,14 @@ public class ChannelView {
 
         TextField categoryField = new TextField();
         categoryField.setPromptText("Naziv");
+        categoryField.setId("catName");
 
         TextField categoryField2 = new TextField();
         categoryField2.setPromptText("Opis");
+        categoryField2.setId("catDesc");
 
         ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.setId("categoryComboBox");
         new Thread(() -> {
             try {
                 List<String> categories = getCategories();
@@ -158,7 +161,7 @@ public class ChannelView {
 
 
         Button addCategory= new Button("Dodaj");
-        addCategory.setId("addButton2");
+        addCategory.setId("addButton3");
         addCategory.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         addCategory.setOnMouseEntered(e -> {
             addCategory.setStyle("-fx-background-color:#173669;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:white;-fx-border-radius:10px;-fx-background-radius:10px");
