@@ -2,6 +2,7 @@ package com.example.demo3.Controller;
 
 import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.NewCategoryDTO;
+import com.example.demo3.Model.Person;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -26,15 +27,44 @@ public class JsonParser {
                     String generatedPassword = teacherNode.get("firstName").asText().toLowerCase() + "123";
                     newUser.setPassword(generatedPassword);
                     newUser.setMacAddress("");
-                    String roleUpperCase = teacherNode.get("title").asText().toUpperCase();
-                    newUser.setRole(roleUpperCase);
+                    String title = teacherNode.get("title").asText();
+                    String role;
+
+                    if ("nastavnik".equalsIgnoreCase(title)) {
+                        role = "PROFESSOR";
+                    } else if ("saradnik".equalsIgnoreCase(title)) {
+                        role = "TEACHING_ASSOCIATE";
+                    } else {
+                        role = title;
+                    }
+
+                    newUser.setRole(role);
 
                     boolean success = ApiClientUser.addUser(newUser);
 
+//                    Person newUser1=ApiClientUser.getUserById(newUser.getId());
+//
+//                    int newUserId=newUser1.getId();
+
+
                     if (success) {
                         System.out.println("Korisnik uspešno dodat: " + newUser.getEmail());
+//                        if (subjectNode != null) {
+//                            String subjectName = subjectNode.get("name").asText();
+//                            String roleForSubject = subjectName.toUpperCase();
+//
+//                            boolean roleAdded = ApiClientUser.addRoleFromUser(newUserId, roleForSubject);
+//
+//                            if (roleAdded) {
+//                                System.out.println("Uloga za predmet '" + subjectName + "' dodeljena korisniku: " + newUser.getEmail());
+//                            } else {
+//                                System.out.println("Greška prilikom dodele uloge za predmet '" + subjectName + "' korisniku: " + newUser.getEmail());
+//                            }
+//                        }
+
                     } else {
-                        System.out.println("Dodavanje korisnika neuspešno: " + newUser.getEmail());
+                        System.out.println("Dodavanje korisnika neuspešno: " + newUser.getId());
+
                     }
                 }
 

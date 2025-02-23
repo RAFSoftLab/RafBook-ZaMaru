@@ -41,6 +41,27 @@ public class ApiClientUser {
         }
     }
 
+    public static Person getUserById(int id) throws IOException {
+        String url = BASE_URL + "/" + id;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String jsonResponse = response.body().string();
+                return objectMapper.readValue(jsonResponse, Person.class);
+            } else if (response.code() == 404) {
+                System.out.println("User not found");
+                return null;
+            } else {
+                throw new IOException("Unexpected response code: " + response.code());
+            }
+        }
+    }
+
     public static boolean addUser(NewUserDTO newUserData) throws IOException {
         String url = BASE_URL + "/auth/register";
 
@@ -50,7 +71,8 @@ public class ApiClientUser {
         jsonObject.put("email", newUserData.getEmail());
         jsonObject.put("password", newUserData.getPassword());
         jsonObject.put("macAddress", newUserData.getMacAddress());
-        jsonObject.put("role", "ADMIN");
+        String role = (newUserData.getRole() == null || newUserData.getRole().isEmpty()) ? "ADMIN" : newUserData.getRole();
+        jsonObject.put("role", role);
 
         String json = jsonObject.toString();
         System.out.println("Request URL: " + url);
@@ -71,6 +93,7 @@ public class ApiClientUser {
             String responseBody = response.body() != null ? response.body().string() : "";
             System.out.println("Response Code: " + response.code());
             System.out.println("Response Body: " + responseBody);
+            System.out.println("Id je "+newUserData.getId());
 
             if (!response.isSuccessful()) {
                 System.out.println("Error Headers: " + response.headers());

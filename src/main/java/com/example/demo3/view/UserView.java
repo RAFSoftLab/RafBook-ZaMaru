@@ -201,8 +201,8 @@ public class UserView {
             if (firstNameField.getText().isEmpty() ||
                     lastNameField.getText().isEmpty() ||
                     usernameField2.getText().isEmpty() ||
-                    emailField.getText().isEmpty() /*||
-                    roleField.getText().isEmpty()*/) {
+                    emailField.getText().isEmpty() ||
+                    roleField.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
                 alert.show();
                 return;
@@ -211,7 +211,7 @@ public class UserView {
             MainRepository.getInstance().put("lastName", lastNameField.getText());
             MainRepository.getInstance().put("password", usernameField2.getText());
             MainRepository.getInstance().put("email", emailField.getText());
-            //MainRepository.getInstance().put("role", roleField.getText());
+            MainRepository.getInstance().put("role", roleField.getText());
             MainRepository.getInstance().put("mac", "no mac address");
 
             helloController.addPerson();
@@ -221,7 +221,7 @@ public class UserView {
             lastNameField.clear();
             usernameField2.clear();
             emailField.clear();
-            //roleField.clear();
+            roleField.clear();
 
         });
 

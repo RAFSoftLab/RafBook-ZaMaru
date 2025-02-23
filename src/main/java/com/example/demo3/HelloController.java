@@ -181,6 +181,9 @@ public class HelloController {
             String username = MainRepository.getInstance().get("password");
             String email = MainRepository.getInstance().get("email");
             String mac = MainRepository.getInstance().get("mac");
+            String role=MainRepository.getInstance().get("role");
+
+
 
             NewUserDTO newUser = new NewUserDTO();
             newUser.setFirstName(firstName);
@@ -189,6 +192,9 @@ public class HelloController {
             newUser.setPassword(username);
             newUser.setEmail(email.toLowerCase());
             newUser.setMacAddress(mac);
+            newUser.setRole(role);
+
+
 
             boolean success = ApiClientUser.addUser(newUser);
 
