@@ -22,7 +22,7 @@ public class PopUpChannelView {
 
 
     TableView<String> tableView = new TableView<>();
-    TableView<RolePermissionDTO> rolesTableView = new TableView<>(); // Nova tabela za uloge kanala
+    TableView<RolePermissionDTO> rolesTableView = new TableView<>();
     private boolean isColumnAdded = false;
     HelloController helloController = new HelloController();
     int channelId;
@@ -88,6 +88,7 @@ public class PopUpChannelView {
         roleColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getRole()));
 
         rolesTableView.getColumns().add(roleColumn);
+        rolesTableView.setId("rolesTableView");
 
         TextField inputField = new TextField();
         inputField.setPromptText("Upisite ulogu...");
