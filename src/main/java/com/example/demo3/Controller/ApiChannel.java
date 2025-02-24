@@ -8,6 +8,7 @@ import com.example.demo3.repository.MainRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -37,7 +38,15 @@ public class ApiChannel {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", newChannelData.getName());
         jsonObject.put("description", newChannelData.getDescription());
-        jsonObject.put("category",newChannelData.getCategory());
+        jsonObject.put("category", newChannelData.getCategory());
+
+
+        if (newChannelData.getRoles() != null) {
+            jsonObject.put("roles", new JSONArray(newChannelData.getRoles()));
+        } else {
+            jsonObject.put("roles", new JSONArray());
+        }
+
         String json = jsonObject.toString();
 
         System.out.println("Request URL: " + url);
@@ -62,7 +71,6 @@ public class ApiChannel {
 
             return response.code() == 200;
         }
-
     }
 
     public static boolean addRolesToChannel(long channelId, List<String> roles) throws IOException {

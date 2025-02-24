@@ -77,39 +77,38 @@ public class JsonParser {
 
 
                 if (subjectNode != null) {
-                    NewCategoryDTO newCategory = new NewCategoryDTO();
-                    newCategory.setName(subjectNode.get("name").asText());
-                    newCategory.setDescription(subjectNode.get("name").asText() + " drzi");
+                    String categoryName = subjectNode.get("name").asText();
+                    String categoryDescription = "Kategorija"+categoryName;
 
-                    System.out.println("Kategorija kreirana: " + newCategory.getName() + " - " + newCategory.getDescription());
+                    System.out.println("Kategorija kreirana: " + categoryName + " - " + categoryDescription);
 
-//                    boolean success2 = ApiClientCategory.addCategory(newCategory);
-//                    if (success2) {
-//                        System.out.println("Uspesno dodata kategorija");
-//
-//                        String[] channelNames = {"Archive", "General", "Obavestenja"};
-//                        String[] channelDescriptions = {
-//                                "Archive channel for " + newCategory.getName(),
-//                                "General channel for " + newCategory.getName(),
-//                                "Obavestenja channel for " + newCategory.getName()
-//                        };
-//
-//                        for (int i = 0; i < channelNames.length; i++) {
-//                            NewChannelDTO newChannel = new NewChannelDTO();
-//                            newChannel.setName(channelNames[i]);
-//                            newChannel.setDescription(channelDescriptions[i]);
-//                            newChannel.setCategory(newCategory.getName());
-//
-//                            boolean successChannel = ApiChannel.addChannel(newChannel);
-//                            if (successChannel) {
-//                                System.out.println("Kanal " + newChannel.getName() + " uspesno dodat u kategoriju " + newCategory.getName());
-//                            } else {
-//                                System.out.println("Neuspesno dodavanje kanala " + newChannel.getName() + " u kategoriju " + newCategory.getName());
-//                            }
-//                        }
-//                    } else {
-//                        System.out.println("Neuspesno dodata kategorija");
-//                    }
+                    boolean success2 = ApiClientCategory.addCategory(categoryName, categoryDescription);
+                    if (success2) {
+                        System.out.println("Uspesno dodata kategorija");
+
+                        String[] channelNames = {"Archive", "General", "Obavestenja"};
+                        String[] channelDescriptions = {
+                                "Archive channel for " + categoryName,
+                                "General channel for " + categoryName,
+                                "Obavestenja channel for " + categoryName
+                        };
+
+                        for (int i = 0; i < channelNames.length; i++) {
+                            NewChannelDTO newChannel = new NewChannelDTO();
+                            newChannel.setName(channelNames[i]);
+                            newChannel.setDescription(channelDescriptions[i]);
+                            newChannel.setCategory(categoryName);
+
+                            boolean successChannel = ApiChannel.addChannel(newChannel);
+                            if (successChannel) {
+                                System.out.println("Kanal " + newChannel.getName() + " uspesno dodat u kategoriju " + categoryName);
+                            } else {
+                                System.out.println("Neuspesno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
+                            }
+                        }
+                    } else {
+                        System.out.println("Neuspesno dodata kategorija");
+                    }
                 }
             }
         } catch (IOException e) {

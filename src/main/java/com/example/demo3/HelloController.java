@@ -336,11 +336,14 @@ public class HelloController {
                 String name = MainRepository.getInstance().get("name");
                 String description = MainRepository.getInstance().get("description");
                 String category = MainRepository.getInstance().get("category");
+                String role=MainRepository.getInstance().get("role");
 
                 NewChannelDTO newChannel = new NewChannelDTO();
                 newChannel.setName(name);
                 newChannel.setDescription(description);
                 newChannel.setCategory(category);
+                newChannel.setRoles(new ArrayList<>());
+
 
                 boolean success = ApiChannel.addChannel(newChannel);
 
@@ -487,6 +490,7 @@ public class HelloController {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Category successfully added!");
                 alert.show();
             } else {
+                Alert alert=new Alert(Alert.AlertType.ERROR,"Category addition failed");
                 System.out.println("Category addition failed");
             }
         } catch (Exception e) {
