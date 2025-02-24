@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class JsonParser {
@@ -98,6 +99,10 @@ public class JsonParser {
                             newChannel.setName(channelNames[i]);
                             newChannel.setDescription(channelDescriptions[i]);
                             newChannel.setCategory(categoryName);
+                            //newChannel.setRoles(Collections.singletonList(categoryName));
+                            List<String> roles = new ArrayList<>();
+                            roles.add(categoryName);
+                            newChannel.setRoles(roles);
 
                             boolean successChannel = ApiChannel.addChannel(newChannel);
                             if (successChannel) {
