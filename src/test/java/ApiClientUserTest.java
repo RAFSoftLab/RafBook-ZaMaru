@@ -1,4 +1,8 @@
+import com.example.demo3.Controller.ApiChannel;
+import com.example.demo3.Controller.ApiClientUser;
 import com.example.demo3.HelloApplication;
+import com.example.demo3.HelloController;
+import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.Person;
 import com.example.demo3.view.UserView;
 import com.example.demo3.Controller.AuthClient;
@@ -8,15 +12,32 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit5.ApplicationTest;
 
+import static org.mockito.ArgumentMatchers.*;
+
 import javax.management.relation.Role;
+import org.mockito.junit.jupiter.MockitoExtension;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+
+@ExtendWith(MockitoExtension.class)
 public class ApiClientUserTest extends ApplicationTest {
 
+
+    @Mock
+    private ApiClientUser apiclientuser;
+
+    @InjectMocks
     private UserView userView;
+
     private TableView<Person> table;
 
     @Override
@@ -24,6 +45,13 @@ public class ApiClientUserTest extends ApplicationTest {
         HelloApplication helloApp = new HelloApplication();
         helloApp.start(stage);
     }
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+
 
 
 

@@ -5,6 +5,13 @@ public class NewCategoryDTO {
     private String name;
     private String description;
 
+    public NewCategoryDTO(String name,String description){
+        this.name=name;
+        this.description=description;
+    }
+
+    public NewCategoryDTO(){}
+
 
     public String getName() {
         return name;

@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class ApiClientUser {
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String BASE_URL = "http://192.168.124.28:1524/api/users";
+    private static final String BASE_URL = "http://localhost:8080/api/users";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static List<Person> getUsers() throws IOException {

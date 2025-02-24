@@ -1,21 +1,45 @@
+import com.example.demo3.Controller.ApiChannel;
 import com.example.demo3.HelloApplication;
+import com.example.demo3.HelloController;
 import com.example.demo3.Model.Channel;
+import com.example.demo3.Model.NewChannelDTO;
 import com.example.demo3.Model.RolePermissionDTO;
 import com.example.demo3.view.ChannelView;
-import com.example.demo3.Controller.AuthClient;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.testfx.framework.junit5.ApplicationTest;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mock;
 
+import java.io.IOException;
 
+@ExtendWith(MockitoExtension.class)
 public class ApiChannelTest extends ApplicationTest {
 
     private ChannelView channelView;
     private TableView<Channel> table;
+
+    @Mock
+    private ApiChannel apichannel;
+
+    @InjectMocks
+    private HelloController helloController;
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+    }
 
     @Override
     public void start(Stage stage) throws Exception {

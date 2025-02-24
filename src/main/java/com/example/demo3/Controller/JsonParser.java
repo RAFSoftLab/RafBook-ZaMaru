@@ -1,5 +1,6 @@
 package com.example.demo3.Controller;
 
+import com.example.demo3.Model.NewChannelDTO;
 import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.NewCategoryDTO;
 import com.example.demo3.Model.Person;
@@ -82,11 +83,33 @@ public class JsonParser {
 
                     System.out.println("Kategorija kreirana: " + newCategory.getName() + " - " + newCategory.getDescription());
 
-                    boolean success2=ApiClientCategory.addCategory(newCategory);
-                    if(success2){
-                        System.out.println("Uspesno dodata kategorija");
-                    }
-                    else{System.out.println("Neuspesno dodata kategorija");}
+//                    boolean success2 = ApiClientCategory.addCategory(newCategory);
+//                    if (success2) {
+//                        System.out.println("Uspesno dodata kategorija");
+//
+//                        String[] channelNames = {"Archive", "General", "Obavestenja"};
+//                        String[] channelDescriptions = {
+//                                "Archive channel for " + newCategory.getName(),
+//                                "General channel for " + newCategory.getName(),
+//                                "Obavestenja channel for " + newCategory.getName()
+//                        };
+//
+//                        for (int i = 0; i < channelNames.length; i++) {
+//                            NewChannelDTO newChannel = new NewChannelDTO();
+//                            newChannel.setName(channelNames[i]);
+//                            newChannel.setDescription(channelDescriptions[i]);
+//                            newChannel.setCategory(newCategory.getName());
+//
+//                            boolean successChannel = ApiChannel.addChannel(newChannel);
+//                            if (successChannel) {
+//                                System.out.println("Kanal " + newChannel.getName() + " uspesno dodat u kategoriju " + newCategory.getName());
+//                            } else {
+//                                System.out.println("Neuspesno dodavanje kanala " + newChannel.getName() + " u kategoriju " + newCategory.getName());
+//                            }
+//                        }
+//                    } else {
+//                        System.out.println("Neuspesno dodata kategorija");
+//                    }
                 }
             }
         } catch (IOException e) {

@@ -28,41 +28,19 @@ public class ApiClientCategory {
                 throw new IOException("Unexpected code " + response);
             }
         }}
-    public static boolean addCategory(NewCategoryDTO newCategoryData) throws IOException {
-        String url = BASE_URL + "/categories";
-        String authToken = AuthClient.getToken();
+    public static boolean addCategory(String name, String description) throws IOException {
+        String json = objectMapper.writeValueAsString(new NewCategoryDTO(name, description));
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("name", newCategoryData.getName());
-        jsonObject.put("description", newCategoryData.getDescription());
-
-        String json = jsonObject.toString();
-        System.out.println("Request URL: " + url);
-        System.out.println("Request JSON: " + json);
-
-        RequestBody body = RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                json
-        );
-
+        RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
         Request request = new Request.Builder()
-                .url(url)
+                .url(BASE_URL + "/categories")
                 .post(body)
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer " + authToken)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            String responseBody = response.body() != null ? response.body().string() : "";
-            System.out.println("Response Code: " + response.code());
-            System.out.println("Response Body: " + responseBody);
-
-            if (!response.isSuccessful()) {
-                System.out.println("Error Headers: " + response.headers());
-                return false;
-            }
-
-            return responseBody.contains("Category successfully added");
+            return response.isSuccessful();
         }
     }
 

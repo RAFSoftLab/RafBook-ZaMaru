@@ -172,18 +172,20 @@ public class ChannelView {
 
         addCategory.setOnAction(e -> {
             if (categoryField.getText().isEmpty() || categoryField2.getText().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena,ukljucujuci kategoriju");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena, uključujući kategoriju");
                 alert.show();
                 return;
             }
 
+            // Save the data to MainRepository
             MainRepository.getInstance().put("name", categoryField.getText());
-            MainRepository.getInstance().put("description", categoryField.getText());
+            MainRepository.getInstance().put("description", categoryField2.getText()); // Fixed here
 
-            helloController.addCategory();
+            helloController.addCategory();  // Call to add the category
+
+            // Clear fields after adding
             categoryField.clear();
             categoryField2.clear();
-
         });
 
 

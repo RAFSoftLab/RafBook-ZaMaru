@@ -7,6 +7,7 @@ import com.example.demo3.Controller.AuthClient;
 import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
 import com.example.demo3.view.View;
+import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +30,7 @@ import java.util.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import static com.example.demo3.Controller.ApiClientCategory.getCategories;
 import static com.example.demo3.Controller.ApiClientUser.*;
 
 public class HelloController {
@@ -464,21 +466,33 @@ public class HelloController {
             String name = MainRepository.getInstance().get("name");
             String description = MainRepository.getInstance().get("description");
 
-            NewCategoryDTO newCategory = new NewCategoryDTO();
-            newCategory.setName(name);
-            newCategory.setDescription(description);
-
-            boolean success = ApiClientCategory.addCategory(newCategory);
+            boolean success = ApiClientCategory.addCategory(name, description);
 
             if (success) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Category added successfully");
+                Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Category added successfully");
+                System.out.println("Category added successfully, refreshing categories...");
+
+                List<String> categories = getCategories();
+                System.out.println("Fetched " + categories.size() + " categories");
+
+                ComboBox<String> comboBox = new ComboBox<>();
+                comboBox.setId("categoryComboBox");
+                Platform.runLater(() -> {
+                    comboBox.getItems().setAll(categories);
+                    if (!categories.isEmpty()) {
+                        comboBox.setValue(categories.get(0));
+                    }
+                });
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Category successfully added!");
                 alert.show();
-                System.out.println("Uspešno dodata kategorija");
+            } else {
+                System.out.println("Category addition failed");
             }
-        } catch (IOException e) {
-            Alert alert3 = new Alert(Alert.AlertType.ERROR, "An error occurred: " + e.getMessage());
-            alert3.showAndWait();
-            System.err.println("Greška prilikom dodavanja kategorije: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error adding category: " + e.getMessage());
+            alert.show();
         }
     }
 
