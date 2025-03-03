@@ -2,14 +2,12 @@ package com.example.demo3.Controller;
 
 import com.example.demo3.Model.NewChannelDTO;
 import com.example.demo3.Model.NewUserDTO;
-import com.example.demo3.Model.NewCategoryDTO;
 import com.example.demo3.Model.Person;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class JsonParser {
@@ -18,6 +16,7 @@ public class JsonParser {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(new File(filePath));
+            List<NewUserDTO> addedUsers = new ArrayList<>();
 
             for (JsonNode node : root) {
                 JsonNode teacherNode = node.get("teacher");
@@ -32,60 +31,29 @@ public class JsonParser {
                     newUser.setPassword(generatedPassword);
                     newUser.setMacAddress("");
                     String title = teacherNode.get("title").asText();
-                    String role;
-
-                    if ("nastavnik".equalsIgnoreCase(title)) {
-                        role = "PROFESSOR";
-                    } else if ("saradnik".equalsIgnoreCase(title)) {
-                        role = "TEACHING_ASSOCIATE";
-                    } else {
-                        role = title;
-                    }
+                    String role = title.equalsIgnoreCase("nastavnik") ? "PROFESSOR"
+                            : title.equalsIgnoreCase("saradnik") ? "TEACHING_ASSOCIATE" : title;
 
                     newUser.setRole(role);
 
                     boolean success = ApiClientUser.addUser(newUser);
-
-//                    Person newUser1=ApiClientUser.getUserById(newUser.getId());
-//
-//                    int newUserId=newUser1.getId();
-
-
                     if (success) {
+                        addedUsers.add(newUser);
                         System.out.println("Korisnik uspešno dodat: " + newUser.getEmail());
-//                        if (subjectNode != null) {
-//                            String subjectName = subjectNode.get("name").asText();
-//                            String roleForSubject = subjectName.toUpperCase();
-//
-//                            boolean roleAdded = ApiClientUser.addRoleFromUser(newUserId, roleForSubject);
-//
-//                            if (roleAdded) {
-//                                System.out.println("Uloga za predmet '" + subjectName + "' dodeljena korisniku: " + newUser.getEmail());
-//                            } else {
-//                                System.out.println("Greška prilikom dodele uloge za predmet '" + subjectName + "' korisniku: " + newUser.getEmail());
-//                            }
-//                        }
-
                     } else {
-                        System.out.println("Dodavanje korisnika neuspešno: " + newUser.getId());
-
+                        System.out.println("Dodavanje korisnika neuspešno: " + newUser.getEmail());
                     }
-
                 }
-
-
-
-
 
                 if (subjectNode != null) {
                     String categoryName = subjectNode.get("name").asText();
-                    String categoryDescription = "Kategorija"+categoryName;
+                    String categoryDescription = "Kategorija " + categoryName;
 
                     System.out.println("Kategorija kreirana: " + categoryName + " - " + categoryDescription);
+                    boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription);
 
-                    boolean success2 = ApiClientCategory.addCategory(categoryName, categoryDescription);
-                    if (success2) {
-                        System.out.println("Uspesno dodata kategorija");
+                    if (successCategory) {
+                        System.out.println("Uspešno dodata kategorija");
 
                         String[] channelNames = {"Archive", "General", "Obavestenja"};
                         String[] channelDescriptions = {
@@ -99,25 +67,50 @@ public class JsonParser {
                             newChannel.setName(channelNames[i]);
                             newChannel.setDescription(channelDescriptions[i]);
                             newChannel.setCategory(categoryName);
-                            //newChannel.setRoles(Collections.singletonList(categoryName));
                             List<String> roles = new ArrayList<>();
                             roles.add(categoryName);
                             newChannel.setRoles(roles);
 
                             boolean successChannel = ApiChannel.addChannel(newChannel);
                             if (successChannel) {
-                                System.out.println("Kanal " + newChannel.getName() + " uspesno dodat u kategoriju " + categoryName);
+                                System.out.println("Kanal " + newChannel.getName() + " uspešno dodat u kategoriju " + categoryName);
                             } else {
-                                System.out.println("Neuspesno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
+                                System.out.println("Neuspešno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
                             }
                         }
                     } else {
-                        System.out.println("Neuspesno dodata kategorija");
+                        System.out.println("Neuspešno dodata kategorija");
+                    }
+                }
+            }
+
+            // Dohvatanje svih korisnika da bismo pronašli ID-eve novih korisnika
+            List<Person> allUsers = ApiClientUser.getUsers();
+            for (NewUserDTO user : addedUsers) {
+                for (Person existingUser : allUsers) {
+                    if (existingUser.getEmail().equals(user.getEmail())) {
+                        JsonNode correspondingNode = findNodeByEmail(root, user.getEmail());
+                        if (correspondingNode != null) {
+                            JsonNode subjectNode = correspondingNode.get("subject");
+                            String roleName = subjectNode != null ? subjectNode.get("name").asText() : "DefaultRole";
+                            ApiClientUser.addRoleFromUser(existingUser.getId(), roleName);
+                            System.out.println("Dodata rola " + roleName + " korisniku " + user.getEmail());
+                        }
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static JsonNode findNodeByEmail(JsonNode root, String email) {
+        for (JsonNode node : root) {
+            JsonNode teacherNode = node.get("teacher");
+            if (teacherNode != null && teacherNode.get("email").asText().equals(email)) {
+                return node;
+            }
+        }
+        return null;
     }
 }
