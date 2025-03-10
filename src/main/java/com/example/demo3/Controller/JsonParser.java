@@ -74,6 +74,7 @@ public class JsonParser {
                             boolean successChannel = ApiChannel.addChannel(newChannel);
                             if (successChannel) {
                                 System.out.println("Kanal " + newChannel.getName() + " uspešno dodat u kategoriju " + categoryName);
+                                GoogleDriveService.createFolder(newChannel.getName());
                             } else {
                                 System.out.println("Neuspešno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
                             }
@@ -84,7 +85,6 @@ public class JsonParser {
                 }
             }
 
-            // Dohvatanje svih korisnika da bismo pronašli ID-eve novih korisnika
             List<Person> allUsers = ApiClientUser.getUsers();
             for (NewUserDTO user : addedUsers) {
                 for (Person existingUser : allUsers) {
