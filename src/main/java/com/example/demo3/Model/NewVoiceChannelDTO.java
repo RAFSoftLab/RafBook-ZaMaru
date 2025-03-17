@@ -19,6 +19,8 @@ public class NewVoiceChannelDTO {
         this.studyProgramName = studyProgramName;
     }
 
+    public NewVoiceChannelDTO(){}
+
     public String getName() {
         return name;
     }

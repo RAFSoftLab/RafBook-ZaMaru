@@ -61,8 +61,8 @@ public class ChannelView {
         roleColumn.setCellValueFactory(cellData -> {
             List<RolePermissionDTO> roles = cellData.getValue().getRolePermissionDTOList();
             String rolesAsString = roles.stream()
-                    .map(RolePermissionDTO::getRole) // Uzimamo samo nazive uloga
-                    .collect(Collectors.joining(", ")); // Spajamo u jedan string sa zarezima
+                    .map(RolePermissionDTO::getRole)
+                    .collect(Collectors.joining(", "));
             return new SimpleStringProperty(rolesAsString);
         });
 
@@ -141,6 +141,14 @@ public class ChannelView {
         categoryField2.setPromptText("Opis");
         categoryField2.setId("catDesc");
 
+        TextField studies=new TextField();
+        studies.setPromptText("Studies");
+        studies.setId("studies");
+
+        TextField studyProgram=new TextField();
+        studyProgram.setPromptText("StudyProgram");
+        studyProgram.setId("StudyProgram");
+
         ComboBox<String> comboBox = new ComboBox<>();
         comboBox.setId("categoryComboBox");
         new Thread(() -> {
@@ -171,21 +179,27 @@ public class ChannelView {
         });
 
         addCategory.setOnAction(e -> {
-            if (categoryField.getText().isEmpty() || categoryField2.getText().isEmpty()) {
+            if (categoryField.getText().isEmpty() || categoryField2.getText().isEmpty() || studyProgram.getText().isEmpty() || studies.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena, uključujući kategoriju");
                 alert.show();
                 return;
             }
 
-            // Save the data to MainRepository
             MainRepository.getInstance().put("name", categoryField.getText());
-            MainRepository.getInstance().put("description", categoryField2.getText()); // Fixed here
+            MainRepository.getInstance().put("description", categoryField2.getText());
+            MainRepository.getInstance().put("studyProgram", studyProgram.getText());
+            MainRepository.getInstance().put("studies", studies.getText());
 
-            helloController.addCategory();  // Call to add the category
 
-            // Clear fields after adding
+
+            helloController.addCategory();
+
+
             categoryField.clear();
             categoryField2.clear();
+            studyProgram.clear();
+            studies.clear();
+
         });
 
 
@@ -254,7 +268,7 @@ public class ChannelView {
         image5.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox, addButton2, editButton, deleteButton,roleButton2);
-        HBox categoryLayout=new HBox(10,categoryField,categoryField2,addCategory);
+        HBox categoryLayout=new HBox(10,categoryField,categoryField2,studies,studyProgram,addCategory);
         VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator2,image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;

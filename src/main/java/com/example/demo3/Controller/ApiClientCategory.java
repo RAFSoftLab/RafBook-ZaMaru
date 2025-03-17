@@ -28,21 +28,33 @@ public class ApiClientCategory {
                 throw new IOException("Unexpected code " + response);
             }
         }}
-    public static boolean addCategory(String name, String description) throws IOException {
-        String json = objectMapper.writeValueAsString(new NewCategoryDTO(name, description));
+    public static boolean addCategory(String name, String description, String studyProgram, String studies) throws IOException {
+        String json = String.format(
+                "{\"name\":\"%s\",\"description\":\"%s\",\"studyProgram\":\"%s\",\"studies\":\"%s\"}",
+                name, description, studyProgram, studies
+        );
 
         RequestBody body = RequestBody.create(json, MediaType.get("application/json"));
+
         Request request = new Request.Builder()
                 .url(BASE_URL + "/categories")
                 .post(body)
-                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken()) // Koristi token za autorizaciju
                 .addHeader("Content-Type", "application/json")
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            return response.isSuccessful();
+            if (response.isSuccessful()) {
+                String responseBody = response.body().string();
+                System.out.println(responseBody);
+                return true;
+            } else {
+                System.out.println("Failed to add category. HTTP code: " + response.code());
+                return false;
+            }
         }
     }
+
 
 
 }
