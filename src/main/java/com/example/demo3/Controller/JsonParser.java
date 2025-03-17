@@ -49,52 +49,54 @@ public class JsonParser {
                 if (subjectNode != null) {
                     String categoryName = subjectNode.get("name").asText();
                     String categoryDescription = "Kategorija " + categoryName;
+                    String studyProgram=subjectNode.get("studyProgram").asText();
+                    String studies="Osnovne akademske studije";
 
                     System.out.println("Kategorija kreirana: " + categoryName + " - " + categoryDescription);
-                    //boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription);
+                    boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription,studyProgram,studies);
 
-//                    if (successCategory) {
-//                        System.out.println("Uspešno dodata kategorija");
-//
-//                        String[] channelNames = {"Archive", "General", "Obavestenja"};
-//                        String[] channelDescriptions = {
-//                                "Archive channel for " + categoryName,
-//                                "General channel for " + categoryName,
-//                                "Obavestenja channel for " + categoryName
-//                        };
-//
-//                        for (int i = 0; i < channelNames.length; i++) {
-//                            NewChannelDTO newChannel = new NewChannelDTO();
-//                            newChannel.setName(channelNames[i]);
-//                            newChannel.setDescription(channelDescriptions[i]);
-//                            newChannel.setCategory(categoryName);
-//                            List<String> roles = new ArrayList<>();
-//                            roles.add(categoryName);
-//                            newChannel.setRoles(roles);
-//
-//                            boolean successChannel = ApiChannel.addChannel(newChannel);
-//                            if (successChannel) {
-//                                System.out.println("Kanal " + newChannel.getName() + " uspešno dodat u kategoriju " + categoryName);
-//                            } else {
-//                                System.out.println("Neuspešno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
-//                            }
-//                        }
-//                        NewVoiceChannelDTO newVoiceChannel = new NewVoiceChannelDTO();
-//                        newVoiceChannel.setName("General channel for " + categoryName);
-//                        newVoiceChannel.setDescription("General channel for " + categoryName);
-//                        newVoiceChannel.setCategoryName(categoryName);
-//                        newVoiceChannel.setStudiesName("DefaultStudiesName");
-//                        newVoiceChannel.setStudyProgramName("DefaultStudyProgramName");
-//
-//                        boolean successVoiceChannel = ApiVoiceChannel.addVoiceChannel(newVoiceChannel);
-//                        if (successVoiceChannel) {
-//                            System.out.println("Voice kanal " + newVoiceChannel.getName() + " uspešno dodat za kategoriju " + categoryName);
-//                        } else {
-//                            System.out.println("Neuspešno dodavanje voice kanala " + newVoiceChannel.getName() + " za kategoriju " + categoryName);
-//                        }
-//                    } else {
-//                        System.out.println("Neuspešno dodata kategorija");
-//                    }
+                    if (successCategory) {
+                        System.out.println("Uspešno dodata kategorija");
+
+                        String[] channelNames = {"Archive", "General", "Obavestenja"};
+                        String[] channelDescriptions = {
+                                "Archive channel for " + categoryName,
+                                "General channel for " + categoryName,
+                                "Obavestenja channel for " + categoryName
+                        };
+
+                        for (int i = 0; i < channelNames.length; i++) {
+                            NewChannelDTO newChannel = new NewChannelDTO();
+                            newChannel.setName(channelNames[i]);
+                            newChannel.setDescription(channelDescriptions[i]);
+                            newChannel.setCategory(categoryName);
+                            List<String> roles = new ArrayList<>();
+                            roles.add(categoryName);
+                            newChannel.setRoles(roles);
+
+                            boolean successChannel = ApiChannel.addChannel(newChannel);
+                            if (successChannel) {
+                                System.out.println("Kanal " + newChannel.getName() + " uspešno dodat u kategoriju " + categoryName);
+                            } else {
+                                System.out.println("Neuspešno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
+                            }
+                        }
+                        NewVoiceChannelDTO newVoiceChannel = new NewVoiceChannelDTO();
+                        newVoiceChannel.setName("General voice channel for " + categoryName);
+                        newVoiceChannel.setDescription("General voice channel for " + categoryName);
+                        newVoiceChannel.setCategoryName(categoryName);
+                        newVoiceChannel.setStudiesName(studies);
+                        newVoiceChannel.setStudyProgramName(studyProgram);
+
+                        boolean successVoiceChannel = ApiVoiceChannel.addVoiceChannel(newVoiceChannel);
+                        if (successVoiceChannel) {
+                            System.out.println("Voice kanal " + newVoiceChannel.getName() + " uspešno dodat za kategoriju " + categoryName);
+                        } else {
+                            System.out.println("Neuspešno dodavanje voice kanala " + newVoiceChannel.getName() + " za kategoriju " + categoryName);
+                        }
+                    } else {
+                        System.out.println("Neuspešno dodata kategorija");
+                    }
                 }
             }
 

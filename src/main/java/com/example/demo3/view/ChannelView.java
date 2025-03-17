@@ -1,9 +1,8 @@
 package com.example.demo3.view;
 
+import com.example.demo3.Controller.ApiStudies;
 import com.example.demo3.HelloController;
-import com.example.demo3.Model.Channel;
-import com.example.demo3.Model.Person;
-import com.example.demo3.Model.RolePermissionDTO;
+import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,9 +16,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.IO;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demo3.Controller.ApiClientCategory.getCategories;
@@ -28,8 +30,6 @@ import static com.example.demo3.Controller.ApiChannel.getChannels;
 public class ChannelView {
     HelloController helloController=new HelloController();
     PopUpChannelView popUpChannelView=new PopUpChannelView();
-
-
 
 
     public VBox createChannelTabContent() {
@@ -149,24 +149,72 @@ public class ChannelView {
         studyProgram.setPromptText("StudyProgram");
         studyProgram.setId("StudyProgram");
 
-        ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.setId("categoryComboBox");
-        new Thread(() -> {
-            try {
-                List<String> categories = getCategories();
+        ComboBox<String> comboBox1 = new ComboBox<>();
+        ComboBox<String> comboBox2 = new ComboBox<>();
+        ComboBox<String> comboBox3 = new ComboBox<>();
 
-                Platform.runLater(() -> {
-                    comboBox.getItems().setAll(categories);
-                    if (!categories.isEmpty()) {
-                        comboBox.setValue(categories.get(0));
-                    }
+        try {
+            // Preuzimanje svih studija sa API-ja
+            List<StudiesDTO> studiesList = ApiStudies.getStudies();
+
+            // Popunjavanje comboBox1 sa svim studijama
+            comboBox1.getItems().addAll(
+                    studiesList.stream().map(StudiesDTO::getName).collect(Collectors.toList())
+            );
+
+            // Listener za comboBox1 (odabir studije)
+            comboBox1.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+                // Pronalaženje odabrane studije
+                Optional<StudiesDTO> selectedStudy = studiesList.stream()
+                        .filter(study -> study.getName().equals(newValue))
+                        .findFirst();
+
+                selectedStudy.ifPresent(study -> {
+                    // Popunjavanje comboBox2 sa programima za odabranu studiju
+                    comboBox2.getItems().clear();
+                    comboBox2.getItems().addAll(
+                            study.getStudyPrograms().stream().map(StudyProgramDTO::getName).collect(Collectors.toList())
+                    );
                 });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        comboBox.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
 
+                // Čišćenje comboBox3
+                comboBox3.getItems().clear();
+            });
+
+            // Listener za comboBox2 (odabir programa studija)
+            comboBox2.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+                // Pronalaženje odabrane studije
+                Optional<StudiesDTO> selectedStudy = studiesList.stream()
+                        .filter(study -> study.getName().equals(comboBox1.getValue()))
+                        .findFirst();
+
+                selectedStudy.ifPresent(study -> {
+                    // Pronalaženje odabranog programa u studiji
+                    Optional<StudyProgramDTO> selectedProgram = study.getStudyPrograms().stream()
+                            .filter(program -> program.getName().equals(newValue))
+                            .findFirst();
+
+                    selectedProgram.ifPresent(program -> {
+                        // Popunjavanje comboBox3 sa kategorijama za odabrani program
+                        comboBox3.getItems().clear();
+                        comboBox3.getItems().addAll(
+                                program.getCategories().stream().map(NewCategoryDTO::getName).collect(Collectors.toList())
+                        );
+                    });
+                });
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Obrada izuzetka u slučaju greške pri preuzimanju podataka
+        }
+
+
+
+        comboBox1.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
+        comboBox2.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
+        comboBox3.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
 
         Button addCategory= new Button("Dodaj");
         addCategory.setId("addButton3");
@@ -214,7 +262,7 @@ public class ChannelView {
             addButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
         addButton2.setOnAction(e -> {
-            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || comboBox.getValue() == null) {
+            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || comboBox1.getValue() == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena,ukljucujuci kategoriju");
                 alert.show();
                 return;
@@ -222,12 +270,12 @@ public class ChannelView {
 
             MainRepository.getInstance().put("name", nameField.getText());
             MainRepository.getInstance().put("description", descriptionField.getText());
-            MainRepository.getInstance().put("category", comboBox.getValue());
+            MainRepository.getInstance().put("category", comboBox1.getValue());
 
             helloController.addChannel();
             nameField.clear();
             descriptionField.clear();
-            comboBox.getSelectionModel().clearSelection();
+            comboBox1.getSelectionModel().clearSelection();
         });
 
 
@@ -267,7 +315,7 @@ public class ChannelView {
         image5.setFitWidth(200);
         image5.setPreserveRatio(true);
 
-        HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox, addButton2, editButton, deleteButton,roleButton2);
+        HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox1,comboBox2,comboBox3,addButton2, editButton, deleteButton,roleButton2);
         HBox categoryLayout=new HBox(10,categoryField,categoryField2,studies,studyProgram,addCategory);
         VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator2,image5);
         vbox.setStyle("-fx-background-color:white");

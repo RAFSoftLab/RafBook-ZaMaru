@@ -1,11 +1,9 @@
 package com.example.demo3;
 
-import com.example.demo3.Controller.ApiChannel;
-import com.example.demo3.Controller.ApiClientCategory;
-import com.example.demo3.Controller.ApiClientUser;
-import com.example.demo3.Controller.AuthClient;
+import com.example.demo3.Controller.*;
 import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
+import com.example.demo3.view.ChannelView;
 import com.example.demo3.view.View;
 import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
@@ -92,6 +90,17 @@ public class HelloController {
     @FXML
     private TableColumn<Channel, String> descriptionColumn;
 
+    @FXML
+    private ComboBox<String> comboBox;
+
+    @FXML
+    private ComboBox<String> comboBoxStudies;
+
+    @FXML
+    private ComboBox<String> comboBoxStudyPrograms;
+
+
+
 
     private ObservableList<Channel> channelData = FXCollections.observableArrayList();
 
@@ -161,6 +170,7 @@ public class HelloController {
 
         table2.setItems(channelData);
         refreshChannelData();
+
 
     }
 
@@ -490,5 +500,10 @@ public class HelloController {
             alert.show();
         }
     }
+
+    private List<StudiesDTO> studiesList = new ArrayList<>();
+    private List<StudyProgramDTO> studyProgramsList = new ArrayList<>();
+    private List<NewCategoryDTO> categoriesList = new ArrayList<>();
+
 
 }
