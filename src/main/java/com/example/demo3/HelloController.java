@@ -464,40 +464,40 @@ public class HelloController {
         }
     }
 
-    public void addCategory() {
-        try {
-            String name = MainRepository.getInstance().get("name");
-            String description = MainRepository.getInstance().get("description");
-
-            boolean success = ApiClientCategory.addCategory(name, description);
-
-            if (success) {
-                Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Category added successfully");
-                System.out.println("Category added successfully, refreshing categories...");
-
-                List<String> categories = getCategories();
-                System.out.println("Fetched " + categories.size() + " categories");
-
-                ComboBox<String> comboBox = new ComboBox<>();
-                comboBox.setId("categoryComboBox");
-                Platform.runLater(() -> {
-                    comboBox.getItems().setAll(categories);
-                    if (!categories.isEmpty()) {
-                        comboBox.setValue(categories.get(0));
-                    }
-                });
-
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Category successfully added!");
-                alert.show();
-            } else {
-                Alert alert=new Alert(Alert.AlertType.ERROR,"Category addition failed");
-                System.out.println("Category addition failed");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Error adding category: " + e.getMessage());
-            alert.show();
-        }
-    }
+//    public void addCategory() {
+//        try {
+//            String name = MainRepository.getInstance().get("name");
+//            String description = MainRepository.getInstance().get("description");
+//
+//            boolean success = ApiClientCategory.addCategory(name, description);
+//
+//            if (success) {
+//                Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Category added successfully");
+//                System.out.println("Category added successfully, refreshing categories...");
+//
+//                List<String> categories = getCategories();
+//                System.out.println("Fetched " + categories.size() + " categories");
+//
+//                ComboBox<String> comboBox = new ComboBox<>();
+//                comboBox.setId("categoryComboBox");
+//                Platform.runLater(() -> {
+//                    comboBox.getItems().setAll(categories);
+//                    if (!categories.isEmpty()) {
+//                        comboBox.setValue(categories.get(0));
+//                    }
+//                });
+//
+//                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Category successfully added!");
+//                alert.show();
+//            } else {
+//                Alert alert=new Alert(Alert.AlertType.ERROR,"Category addition failed");
+//                System.out.println("Category addition failed");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Alert alert = new Alert(Alert.AlertType.ERROR, "Error adding category: " + e.getMessage());
+//            alert.show();
+//        }
+//    }
 
 }

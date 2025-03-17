@@ -74,7 +74,6 @@ public class JsonParser {
                             boolean successChannel = ApiChannel.addChannel(newChannel);
                             if (successChannel) {
                                 System.out.println("Kanal " + newChannel.getName() + " uspešno dodat u kategoriju " + categoryName);
-                                GoogleDriveService.createFolder(newChannel.getName());
                             } else {
                                 System.out.println("Neuspešno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
                             }
