@@ -1,6 +1,7 @@
 package com.example.demo3.view;
 
 import com.example.demo3.Controller.ApiStudies;
+import com.example.demo3.Controller.ApiStudyProgram;
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
@@ -154,61 +155,36 @@ public class ChannelView {
         ComboBox<String> comboBox3 = new ComboBox<>();
 
         try {
-            // Preuzimanje svih studija sa API-ja
             List<StudiesDTO> studiesList = ApiStudies.getStudies();
 
-            // Popunjavanje comboBox1 sa svim studijama
             comboBox1.getItems().addAll(
                     studiesList.stream().map(StudiesDTO::getName).collect(Collectors.toList())
             );
 
-            // Listener za comboBox1 (odabir studije)
             comboBox1.valueProperty().addListener((observable, oldValue, newValue) -> {
-
-                // Pronalaženje odabrane studije
-                Optional<StudiesDTO> selectedStudy = studiesList.stream()
-                        .filter(study -> study.getName().equals(newValue))
-                        .findFirst();
-
-                selectedStudy.ifPresent(study -> {
-                    // Popunjavanje comboBox2 sa programima za odabranu studiju
-                    comboBox2.getItems().clear();
-                    comboBox2.getItems().addAll(
-                            study.getStudyPrograms().stream().map(StudyProgramDTO::getName).collect(Collectors.toList())
-                    );
-                });
-
-                // Čišćenje comboBox3
+                comboBox2.getItems().clear();
                 comboBox3.getItems().clear();
+
+                if (newValue != null) {
+                    try {
+                        List<StudyProgramDTO> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
+                        System.out.println("Selected study: " + newValue);
+                        System.out.println(studyPrograms);
+
+                        List<String> programNames = studyPrograms.stream()
+                                .map(StudyProgramDTO::getName)
+                                .collect(Collectors.toList());
+
+                        comboBox2.getItems().addAll(programNames);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             });
-
-            // Listener za comboBox2 (odabir programa studija)
-            comboBox2.valueProperty().addListener((observable, oldValue, newValue) -> {
-
-                // Pronalaženje odabrane studije
-                Optional<StudiesDTO> selectedStudy = studiesList.stream()
-                        .filter(study -> study.getName().equals(comboBox1.getValue()))
-                        .findFirst();
-
-                selectedStudy.ifPresent(study -> {
-                    // Pronalaženje odabranog programa u studiji
-                    Optional<StudyProgramDTO> selectedProgram = study.getStudyPrograms().stream()
-                            .filter(program -> program.getName().equals(newValue))
-                            .findFirst();
-
-                    selectedProgram.ifPresent(program -> {
-                        // Popunjavanje comboBox3 sa kategorijama za odabrani program
-                        comboBox3.getItems().clear();
-                        comboBox3.getItems().addAll(
-                                program.getCategories().stream().map(NewCategoryDTO::getName).collect(Collectors.toList())
-                        );
-                    });
-                });
-            });
-
         } catch (IOException e) {
-            e.printStackTrace(); // Obrada izuzetka u slučaju greške pri preuzimanju podataka
+            e.printStackTrace();
         }
+
 
 
 

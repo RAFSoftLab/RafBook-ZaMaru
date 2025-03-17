@@ -1,7 +1,12 @@
 package com.example.demo3.Model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NewCategoryDTO {
 
+    private String id;
     private String name;
     private String description;
     private String studies;
@@ -13,6 +18,14 @@ public class NewCategoryDTO {
     }
 
     public NewCategoryDTO(){}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
 
     public String getName() {

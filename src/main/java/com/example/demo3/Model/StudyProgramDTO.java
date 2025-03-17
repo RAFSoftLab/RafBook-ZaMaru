@@ -39,4 +39,9 @@ public class StudyProgramDTO {
     public void setCategories(List<NewCategoryDTO> studyPrograms) {
         this.studyPrograms = studyPrograms;
     }
+
+    @Override
+    public String toString() {
+        return getName(); // Pretpostavljam da metoda getName() postoji i vraća ime studijskog programa
+    }
 }
