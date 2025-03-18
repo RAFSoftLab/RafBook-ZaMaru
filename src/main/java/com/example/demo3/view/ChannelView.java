@@ -167,15 +167,38 @@ public class ChannelView {
 
                 if (newValue != null) {
                     try {
+                        // Učitavamo listu StudyProgramDTO objekata prema selektovanom "study"
                         List<StudyProgramDTO> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
                         System.out.println("Selected study: " + newValue);
                         System.out.println(studyPrograms);
 
+                        // Dodajemo sve nazive programa u comboBox2
                         List<String> programNames = studyPrograms.stream()
-                                .map(StudyProgramDTO::getName)
+                                .map(StudyProgramDTO::getDescription)
                                 .collect(Collectors.toList());
-
                         comboBox2.getItems().addAll(programNames);
+
+                        // Dodajemo listener za selektovani program u comboBox2
+                        comboBox2.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+                            comboBox3.getItems().clear();
+
+                            if (newValue1 != null) {
+                                // Pronađi odgovarajući StudyProgramDTO prema selektovanom "description"
+                                StudyProgramDTO selectedProgram = studyPrograms.stream()
+                                        .filter(program -> program.getDescription().equals(newValue1))
+                                        .findFirst()
+                                        .orElse(null);
+
+                                if (selectedProgram != null) {
+
+                                    List<String> categoryNames = selectedProgram.getCategories().stream()
+                                            .map(NewCategoryDTO::getName)
+                                            .collect(Collectors.toList());
+                                    comboBox3.getItems().addAll(categoryNames);
+                                }
+                            }
+                        });
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -184,6 +207,7 @@ public class ChannelView {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
 
 
