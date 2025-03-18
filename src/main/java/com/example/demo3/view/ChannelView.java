@@ -142,6 +142,57 @@ public class ChannelView {
         categoryField2.setPromptText("Opis");
         categoryField2.setId("catDesc");
 
+        ComboBox<String> comboBox4 = new ComboBox<>();
+        ComboBox<String> comboBox5 = new ComboBox<>();
+
+        comboBox4.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
+        comboBox5.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
+
+        try {
+            List<StudiesDTO> studiesList = ApiStudies.getStudies();
+
+            comboBox4.getItems().addAll(
+                    studiesList.stream().map(StudiesDTO::getName).collect(Collectors.toList())
+            );
+
+            comboBox4.valueProperty().addListener((observable, oldValue, newValue) -> {
+                comboBox5.getItems().clear();
+
+                if (newValue != null) {
+                    try {
+                        List<StudyProgramDTO> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
+                        System.out.println("Selected study: " + newValue);
+                        System.out.println(studyPrograms);
+
+                        List<String> programNames = studyPrograms.stream()
+                                .map(StudyProgramDTO::getDescription)
+                                .collect(Collectors.toList());
+                        comboBox5.getItems().addAll(programNames);
+
+                        comboBox5.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
+                            if (newValue1 != null) {
+                                StudyProgramDTO selectedProgram = studyPrograms.stream()
+                                        .filter(program -> program.getDescription().equals(newValue1))
+                                        .findFirst()
+                                        .orElse(null);
+
+                                if (selectedProgram != null) {
+                                    // Implement actions if needed for comboBox5 selection
+                                }
+                            }
+                        });
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
         TextField studies=new TextField();
         studies.setPromptText("Studies");
         studies.setId("studies");
@@ -167,23 +218,19 @@ public class ChannelView {
 
                 if (newValue != null) {
                     try {
-                        // Učitavamo listu StudyProgramDTO objekata prema selektovanom "study"
                         List<StudyProgramDTO> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
                         System.out.println("Selected study: " + newValue);
                         System.out.println(studyPrograms);
 
-                        // Dodajemo sve nazive programa u comboBox2
                         List<String> programNames = studyPrograms.stream()
                                 .map(StudyProgramDTO::getDescription)
                                 .collect(Collectors.toList());
                         comboBox2.getItems().addAll(programNames);
 
-                        // Dodajemo listener za selektovani program u comboBox2
                         comboBox2.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
                             comboBox3.getItems().clear();
 
                             if (newValue1 != null) {
-                                // Pronađi odgovarajući StudyProgramDTO prema selektovanom "description"
                                 StudyProgramDTO selectedProgram = studyPrograms.stream()
                                         .filter(program -> program.getDescription().equals(newValue1))
                                         .findFirst()
@@ -316,7 +363,7 @@ public class ChannelView {
         image5.setPreserveRatio(true);
 
         HBox inputLayout = new HBox(10,nameField, descriptionField,comboBox1,comboBox2,comboBox3,addButton2, editButton, deleteButton,roleButton2);
-        HBox categoryLayout=new HBox(10,categoryField,categoryField2,studies,studyProgram,addCategory);
+        HBox categoryLayout=new HBox(10,categoryField,categoryField2,comboBox4,comboBox5,addCategory);
         VBox vbox = new VBox(10, pretraga, searchField, table2,kanali, inputLayout,separator,kategorije,categoryLayout,separator2,image5);
         vbox.setStyle("-fx-background-color:white");
         return vbox;
