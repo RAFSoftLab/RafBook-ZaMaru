@@ -274,28 +274,25 @@ public class ChannelView {
         });
 
         addCategory.setOnAction(e -> {
-            if (categoryField.getText().isEmpty() || categoryField2.getText().isEmpty() || studyProgram.getText().isEmpty() || studies.getText().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena, uključujući kategoriju");
+            if (categoryField.getText().isEmpty() || categoryField2.getText().isEmpty() || comboBox5.getValue() == null || comboBox4.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena, uključujući kategoriju i selektovane studije");
                 alert.show();
                 return;
             }
 
             MainRepository.getInstance().put("name", categoryField.getText());
             MainRepository.getInstance().put("description", categoryField2.getText());
-            MainRepository.getInstance().put("studyProgram", studyProgram.getText());
-            MainRepository.getInstance().put("studies", studies.getText());
-
-
+            MainRepository.getInstance().put("studyProgram", comboBox5.getValue());
+            MainRepository.getInstance().put("studies", comboBox4.getValue());
 
             helloController.addCategory();
 
-
             categoryField.clear();
             categoryField2.clear();
-            studyProgram.clear();
-            studies.clear();
-
+            comboBox5.setValue(null);
+            comboBox4.setValue(null);
         });
+
 
 
 
