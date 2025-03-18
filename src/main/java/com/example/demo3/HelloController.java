@@ -347,12 +347,16 @@ public class HelloController {
                 String description = MainRepository.getInstance().get("description");
                 String category = MainRepository.getInstance().get("category");
                 String role=MainRepository.getInstance().get("role");
+                String studiesName=MainRepository.getInstance().get("studiesName");
+                String studyProgramName=MainRepository.getInstance().get("studyProgramName");
 
                 NewChannelDTO newChannel = new NewChannelDTO();
                 newChannel.setName(name);
                 newChannel.setDescription(description);
                 newChannel.setCategory(category);
                 newChannel.setRoles(new ArrayList<>());
+                newChannel.setStudiesName(studiesName);
+                newChannel.setStudyProgramName(studyProgramName);
 
 
                 boolean success = ApiChannel.addChannel(newChannel);

@@ -306,7 +306,7 @@ public class ChannelView {
             addButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
         addButton2.setOnAction(e -> {
-            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || comboBox1.getValue() == null) {
+            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || comboBox1.getValue() == null || comboBox2.getValue() == null || comboBox3.getValue() == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena,ukljucujuci kategoriju");
                 alert.show();
                 return;
@@ -314,12 +314,16 @@ public class ChannelView {
 
             MainRepository.getInstance().put("name", nameField.getText());
             MainRepository.getInstance().put("description", descriptionField.getText());
-            MainRepository.getInstance().put("category", comboBox1.getValue());
+            MainRepository.getInstance().put("studies", comboBox1.getValue());
+            MainRepository.getInstance().put("studyProgram", comboBox2.getValue());
+            MainRepository.getInstance().put("category", comboBox3.getValue());
 
             helloController.addChannel();
             nameField.clear();
             descriptionField.clear();
             comboBox1.getSelectionModel().clearSelection();
+            comboBox2.getSelectionModel().clearSelection();
+            comboBox3.getSelectionModel().clearSelection();
         });
 
 

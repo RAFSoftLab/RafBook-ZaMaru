@@ -39,7 +39,8 @@ public class ApiChannel {
         jsonObject.put("name", newChannelData.getName());
         jsonObject.put("description", newChannelData.getDescription());
         jsonObject.put("category", newChannelData.getCategory());
-
+        jsonObject.put("studiesName", newChannelData.getStudiesName());
+        jsonObject.put("studyProgramName", newChannelData.getStudyProgramName());
 
         if (newChannelData.getRoles() != null) {
             jsonObject.put("roles", new JSONArray(newChannelData.getRoles()));

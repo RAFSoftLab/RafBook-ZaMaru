@@ -7,6 +7,8 @@ public class NewChannelDTO {
     private String description;
     private String category;
     private List<String> roles;
+    private String studiesName;
+    private String studyProgramName;
 
 
 
@@ -37,6 +39,23 @@ public class NewChannelDTO {
     public void setRoles(List<String> roles) {
         this.roles = roles;
     }
+
+    public String getStudiesName() {
+        return studiesName;
+    }
+
+    public void setStudiesName(String studiesName) {
+        this.studiesName = studiesName;
+    }
+
+    public String getStudyProgramName() {
+        return studyProgramName;
+    }
+
+    public void setStudyProgramName(String studyProgramName) {
+        this.studyProgramName = studyProgramName;
+    }
+
 
 
 }
