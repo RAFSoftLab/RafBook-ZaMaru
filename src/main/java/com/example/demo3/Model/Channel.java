@@ -9,14 +9,16 @@ public class Channel {
     private List<String> messageDTOList;
     private List<RolePermissionDTO> rolePermissionDTOList;
     private boolean canWrite;
+    private String folderId;
 
     public Channel(){}
 
-    public Channel(String name, String description, List<String> messageDTOList, boolean canWrite) {
+    public Channel(String name, String description, List<String> messageDTOList, boolean canWrite,String folderId) {
         this.name = name;
         this.description = description;
         this.messageDTOList = messageDTOList;
         this.canWrite = canWrite;
+        this.folderId=folderId;
     }
 
     public int getId() {
@@ -69,6 +71,13 @@ public class Channel {
 
     public void setRolePermissionDTOList(List<RolePermissionDTO> rolePermissionDTOList) {
         this.rolePermissionDTOList = rolePermissionDTOList;
+    }
+    public String getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
     }
 
 }

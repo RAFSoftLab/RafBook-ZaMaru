@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.demo3.Controller.ApiChannel.editChannel;
 import static com.example.demo3.Controller.ApiClientCategory.getCategories;
 import static com.example.demo3.Controller.ApiChannel.getChannels;
 
@@ -191,6 +192,20 @@ public class ChannelView {
             e.printStackTrace();
         }
 
+        table2.setRowFactory(tv -> {
+            TableRow<Channel> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Channel selectedChannel = row.getItem();
+
+                    nameField.setText(selectedChannel.getName());
+                    descriptionField.setText(selectedChannel.getDescription());
+
+                }
+            });
+            return row;
+        });
+
 
 
         TextField studies=new TextField();
@@ -306,17 +321,18 @@ public class ChannelView {
             addButton2.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
         addButton2.setOnAction(e -> {
-            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() || comboBox1.getValue() == null || comboBox2.getValue() == null || comboBox3.getValue() == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena,ukljucujuci kategoriju");
+            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty() ||
+                    comboBox1.getValue() == null || comboBox2.getValue() == null || comboBox3.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena, uključujući kategoriju");
                 alert.show();
                 return;
             }
 
             MainRepository.getInstance().put("name", nameField.getText());
             MainRepository.getInstance().put("description", descriptionField.getText());
-            MainRepository.getInstance().put("studies", comboBox1.getValue());
-            MainRepository.getInstance().put("studyProgram", comboBox2.getValue());
-            MainRepository.getInstance().put("category", comboBox3.getValue());
+            MainRepository.getInstance().put("studiesName", comboBox1.getValue()); // Ispravljeno
+            MainRepository.getInstance().put("studyProgramName", comboBox2.getValue()); // Ispravljeno
+            MainRepository.getInstance().put("categoryName", comboBox3.getValue());
 
             helloController.addChannel();
             nameField.clear();
@@ -325,6 +341,7 @@ public class ChannelView {
             comboBox2.getSelectionModel().clearSelection();
             comboBox3.getSelectionModel().clearSelection();
         });
+
 
 
         Button deleteButton = new Button("Obriši");
@@ -345,6 +362,45 @@ public class ChannelView {
         editButton.setOnMouseExited(e -> {
             editButton.setStyle("-fx-background-color:white;-fx-text-fill:#173669;-fx-font-weight:bold;-fx-font-size:12px;-fx-border-color:#173669;-fx-border-radius:10px;-fx-background-radius:10px");
         });
+
+        editButton.setOnAction(event -> {
+            if (nameField.getText().isEmpty() || descriptionField.getText().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena!");
+                alert.show();
+                return;
+            }
+
+            Channel selectedChannel = table2.getSelectionModel().getSelectedItem();
+
+            if (selectedChannel == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Nijedan red nije selektovan za ažuriranje!");
+                alert.show();
+                return;
+            }
+
+            try {
+                boolean success = editChannel(selectedChannel.getId(), nameField.getText(), descriptionField.getText());
+
+                if (success) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Kanal uspešno ažuriran!");
+                    alert.show();
+
+                    selectedChannel.setName(nameField.getText());
+                    selectedChannel.setDescription(descriptionField.getText());
+                    table2.refresh();
+
+                    nameField.clear();
+                    descriptionField.clear();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Ažuriranje kanala nije uspelo! Proverite prava pristupa.");
+                    alert.show();
+                }
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Došlo je do greške: " + e.getMessage());
+                alert.show();
+            }
+        });
+
 
         Button roleButton2=new Button("Uloge");
         roleButton2.setId("roleButton2");

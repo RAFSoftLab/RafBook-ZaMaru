@@ -38,9 +38,9 @@ public class ApiChannel {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", newChannelData.getName());
         jsonObject.put("description", newChannelData.getDescription());
-        jsonObject.put("category", newChannelData.getCategory());
-        jsonObject.put("studiesName", newChannelData.getStudiesName());
-        jsonObject.put("studyProgramName", newChannelData.getStudyProgramName());
+        jsonObject.put("categoryName", newChannelData.getCategoryName());
+        jsonObject.put("studiesName", newChannelData.getStudiesName()); // Ispravljeno
+        jsonObject.put("studyProgramName", newChannelData.getStudyProgramName()); // Ispravljeno
 
         if (newChannelData.getRoles() != null) {
             jsonObject.put("roles", new JSONArray(newChannelData.getRoles()));
@@ -133,6 +133,39 @@ public class ApiChannel {
             return response.code() == 200;
         }
     }
+
+    public static boolean editChannel(int id, String name, String description) throws IOException {
+        String url = BASE_URL + "/" + id + "?id=" + id + "&name=" + name + "&description=" + description;
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("name", name);
+        jsonObject.put("description", description);
+
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                jsonObject.toString()
+        );
+
+        Request request = new Request.Builder()
+                .url(url)
+                .patch(body)
+                .addHeader("Authorization", "Bearer " + AuthClient.getToken())
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        System.out.println(request);
+        System.out.println(body);
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = response.body() != null ? response.body().string() : "";
+            System.out.println("Response Code: " + response.code());
+            System.out.println("Response Body: " + responseBody);
+
+            return response.code() == 200;
+        }
+    }
+
 
 
 

@@ -69,7 +69,7 @@ public class JsonParser {
                             NewChannelDTO newChannel = new NewChannelDTO();
                             newChannel.setName(channelNames[i]);
                             newChannel.setDescription(channelDescriptions[i]);
-                            newChannel.setCategory(categoryName);
+                            newChannel.setCategoryName(categoryName);
                             List<String> roles = new ArrayList<>();
                             roles.add(categoryName);
                             newChannel.setRoles(roles);

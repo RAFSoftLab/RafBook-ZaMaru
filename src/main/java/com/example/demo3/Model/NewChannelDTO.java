@@ -1,14 +1,18 @@
 package com.example.demo3.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
+
 
 public class NewChannelDTO {
     private String name;
     private String description;
-    private String category;
     private List<String> roles;
+    private String categoryName;
     private String studiesName;
     private String studyProgramName;
+    private String folderId;
 
 
 
@@ -25,11 +29,11 @@ public class NewChannelDTO {
     public void setDescription(String description){
         this.description=description;
     }
-    public String getCategory() {
-        return category;
+    public String getCategoryName() {
+        return categoryName;
     }
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryName(String category) {
+        this.categoryName = category;
     }
 
     public List<String> getRoles() {
@@ -55,6 +59,15 @@ public class NewChannelDTO {
     public void setStudyProgramName(String studyProgramName) {
         this.studyProgramName = studyProgramName;
     }
+
+    public String getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(String folderId) {
+        this.folderId = folderId;
+    }
+
 
 
 

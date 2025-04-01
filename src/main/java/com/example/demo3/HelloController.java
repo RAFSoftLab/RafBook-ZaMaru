@@ -341,60 +341,58 @@ public class HelloController {
         }
     }
 
-    public void addChannel () {
-            try {
-                String name = MainRepository.getInstance().get("name");
-                String description = MainRepository.getInstance().get("description");
-                String category = MainRepository.getInstance().get("category");
-                String role=MainRepository.getInstance().get("role");
-                String studiesName=MainRepository.getInstance().get("studiesName");
-                String studyProgramName=MainRepository.getInstance().get("studyProgramName");
+    public void addChannel() {
+        try {
+            String name = MainRepository.getInstance().get("name");
+            String description = MainRepository.getInstance().get("description");
+            String category = MainRepository.getInstance().get("categoryName");
+            String role = MainRepository.getInstance().get("role");
+            String studiesName = MainRepository.getInstance().get("studiesName"); // Ispravljeno
+            String studyProgramName = MainRepository.getInstance().get("studyProgramName"); // Ispravljeno
 
-                NewChannelDTO newChannel = new NewChannelDTO();
-                newChannel.setName(name);
-                newChannel.setDescription(description);
-                newChannel.setCategory(category);
-                newChannel.setRoles(new ArrayList<>());
-                newChannel.setStudiesName(studiesName);
-                newChannel.setStudyProgramName(studyProgramName);
+            NewChannelDTO newChannel = new NewChannelDTO();
+            newChannel.setName(name);
+            newChannel.setDescription(description);
+            newChannel.setCategoryName(category);
+            newChannel.setRoles(new ArrayList<>());
+            newChannel.setStudiesName(studiesName);
+            newChannel.setStudyProgramName(studyProgramName);
 
+            boolean success = ApiChannel.addChannel(newChannel);
 
-                boolean success = ApiChannel.addChannel(newChannel);
+            if (success) {
+                Alert alert1 = new Alert(Alert.AlertType.CONFIRMATION, "Channel added successfully");
+                System.out.println("Channel added successfully, refreshing table...");
 
-                if (success) {
-                    Alert alert1=new Alert(Alert.AlertType.CONFIRMATION,"Channel added successfully");
-                    System.out.println("Channel added successfully, refreshing table...");
+                List<Channel> channels = ApiChannel.getChannels();
+                System.out.println("Fetched " + channels.size() + " channels");
 
-                    List<Channel> channels = ApiChannel.getChannels();
-                    System.out.println("Fetched " + channels.size() + " channels");
+                channelData.clear();
+                channelData = FXCollections.observableArrayList(channels);
 
-                    channelData.clear();
-
-                    channelData = FXCollections.observableArrayList(channels);
-
-                    if (table2 != null) {
-                        table2.setItems(null);
-                        table2.setItems(channelData);
-                        table2.refresh();
-                        System.out.println("Table refreshed with " + table2.getItems().size() + " items");
-                    } else {
-                        System.out.println("table2 is null!");
-                    }
-
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!");
-                    alert.show();
+                if (table2 != null) {
+                    table2.setItems(null);
+                    table2.setItems(channelData);
+                    table2.refresh();
+                    System.out.println("Table refreshed with " + table2.getItems().size() + " items");
                 } else {
-                    System.out.println("Channel addition failed");
+                    System.out.println("table2 is null!");
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Alert alert = new Alert(Alert.AlertType.ERROR,
-                        "Error adding channel: " + e.getMessage());
-                alert.show();
-            }
-        }
 
-        public ObservableList<Channel> getChannelData () {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Channel successfully added!");
+                alert.show();
+            } else {
+                System.out.println("Channel addition failed");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error adding channel: " + e.getMessage());
+            alert.show();
+        }
+    }
+
+
+    public ObservableList<Channel> getChannelData () {
             return channelData;
         }
 
