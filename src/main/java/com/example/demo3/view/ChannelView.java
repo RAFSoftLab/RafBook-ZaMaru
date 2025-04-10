@@ -167,7 +167,7 @@ public class ChannelView {
                         System.out.println(studyPrograms);
 
                         List<String> programNames = studyPrograms.stream()
-                                .map(StudyProgramDTO::getDescription)
+                                .map(StudyProgramDTO::getName)
                                 .collect(Collectors.toList());
                         comboBox5.getItems().addAll(programNames);
 
@@ -241,7 +241,7 @@ public class ChannelView {
                         System.out.println(studyPrograms);
 
                         List<String> programNames = studyPrograms.stream()
-                                .map(StudyProgramDTO::getDescription)
+                                .map(StudyProgramDTO::getName)
                                 .collect(Collectors.toList());
                         comboBox2.getItems().addAll(programNames);
                         System.out.println("Selected study program: " + comboBox2.getValue());
@@ -251,7 +251,7 @@ public class ChannelView {
 
                             if (newValue1 != null) {
                                 StudyProgramDTO selectedProgram = studyPrograms.stream()
-                                        .filter(program -> program.getDescription().equals(newValue1))
+                                        .filter(program -> program.getName().equals(newValue1))
                                         .findFirst()
                                         .orElse(null);
 
