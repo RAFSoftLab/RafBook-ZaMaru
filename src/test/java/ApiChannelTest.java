@@ -7,6 +7,7 @@ import com.example.demo3.Model.RolePermissionDTO;
 import com.example.demo3.view.ChannelView;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -190,7 +191,6 @@ public class ApiChannelTest extends ApplicationTest {
 
         clickOn(usernameField).write("mara");
         clickOn(passwordField).write("mara123");
-
         clickOn(loginButton);
 
         TabPane tabPane = lookup("#tabPane").query();
@@ -201,6 +201,16 @@ public class ApiChannelTest extends ApplicationTest {
 
         clickOn(categoryField).write("Nova kategorija");
         clickOn(categoryField2).write("Opis nove kategorije");
+
+        ComboBox<String> comboBox4 = lookup("#comboBox4").queryComboBox();
+        clickOn(comboBox4);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+
+        ComboBox<String> comboBox5 = lookup("#comboBox5").queryComboBox();
+        clickOn(comboBox5);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
 
         Button addCategory = lookup("#addButton3").queryButton();
         clickOn(addCategory);

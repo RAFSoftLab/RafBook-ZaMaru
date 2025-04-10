@@ -143,7 +143,9 @@ public class ChannelView {
         categoryField2.setId("catDesc");
 
         ComboBox<String> comboBox4 = new ComboBox<>();
+        comboBox4.setId("comboBox4");
         ComboBox<String> comboBox5 = new ComboBox<>();
+        comboBox5.setId("comboBox5");
 
         comboBox4.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");
         comboBox5.setStyle("-fx-background-color: white; -fx-padding: 0 5px;-fx-border-color: #173669;-fx-border-radius: 5px;-fx-text-fill:#173669;");

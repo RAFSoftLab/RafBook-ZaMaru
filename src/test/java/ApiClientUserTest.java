@@ -158,60 +158,48 @@ public class ApiClientUserTest extends ApplicationTest {
         assertTrue(found, "Korisnik nije uspešno ažuriran.");
     }
 
-//    @Test
-//    public void testAddRole() {
-//
-//        TextField usernameField = lookup("#usernameField").query();
-//        PasswordField passwordField = lookup("#passwordField").query();
-//        Button loginButton = lookup("#loginButton").queryButton();
-//
-//        clickOn(usernameField).write("mara");
-//        clickOn(passwordField).write("mara123");
-//
-//        clickOn(loginButton);
-//
-//        TableView<Person> table = lookup("#table").query();
-//        assertNotNull(table, "Tabela nije pronađena.");
-//
-//        ObservableList<Person> items = table.getItems();
-//        assertNotNull(items, "Podaci u tabeli ne smeju biti null.");
-//        assertFalse(items.isEmpty(), "Tabela ne sme biti prazna pre dodavanja uloge.");
-//        assertTrue(items.size() >= 1, "Tabela mora imati najmanje jedan red za testiranje.");
-//
-//        Person userToEdit = items.get(5);
-//        table.getSelectionModel().select(5);
-//
-//        sleep(500);
-//
-//        assertEquals(userToEdit, table.getSelectionModel().getSelectedItem(), "Korisnik nije selektovan.");
-//
-//        Button roleButton = lookup("#roleButton").queryButton();
-//        clickOn(roleButton);
-//
-//        sleep(500);
-//
-//        TableView<Role> popUpTable = lookup("#popUpTable").query();
-//        assertNotNull(popUpTable, "Pop-up tabela nije pronađena.");
-//
-//        ObservableList<Role> popUpItems = popUpTable.getItems();
-//        assertNotNull(popUpItems, "Podaci u pop-up tabeli ne smeju biti null.");
-//        assertFalse(popUpItems.isEmpty(), "Pop-up tabela ne sme biti prazna pre dodavanja uloge.");
-//        assertTrue(popUpItems.size() >= 1, "Pop-up tabela mora imati najmanje jedan red za testiranje.");
-//
-//        popUpTable.getSelectionModel().select(0);
-//
-//        sleep(500);
-//
-//        assertEquals(popUpItems.get(0), popUpTable.getSelectionModel().getSelectedItem(), "Uloga nije selektovana.");
-//
-//        TextField roleField = lookup("#roleField").query();
-//        clickOn(roleField).eraseText(roleField.getText().length()).write("STUDENT");
-//
-//        Button addRoleButton = lookup("#addRole").queryButton();
-//        clickOn(addRoleButton);
-//
-//        sleep(500);
-//    }
+
+    @Test
+    public void testAddRole() {
+
+        TextField usernameField = lookup("#usernameField").query();
+        PasswordField passwordField = lookup("#passwordField").query();
+        Button loginButton = lookup("#loginButton").queryButton();
+
+        clickOn(usernameField).write("mara");
+        clickOn(passwordField).write("mara123");
+        clickOn(loginButton);
+
+        TableView<Person> table = lookup("#table").query();
+        assertNotNull(table, "Tabela nije pronađena.");
+
+        ObservableList<Person> items = table.getItems();
+        assertNotNull(items, "Podaci u tabeli ne smeju biti null.");
+        assertFalse(items.isEmpty(), "Tabela ne sme biti prazna.");
+
+        assertTrue(items.size() >= 2, "Tabela mora imati najmanje dva reda za testiranje.");
+
+        Person userToEdit = items.get(1);
+        table.getSelectionModel().select(1);
+
+        sleep(500);
+        assertEquals(userToEdit, table.getSelectionModel().getSelectedItem(), "Korisnik nije selektovan.");
+
+        Button roleButton = lookup("#roleButton").queryButton();
+        clickOn(roleButton);
+
+        sleep(500);
+
+        TextField roleField = lookup("#roleField").query();
+        clickOn(roleField).eraseText(roleField.getText().length()).write("ADMIN");
+
+        Button addRoleButton = lookup("#addRole").queryButton();
+        clickOn(addRoleButton);
+
+        sleep(500);
+    }
+
+
 
     @Test
     public void testDeleteRole() {
