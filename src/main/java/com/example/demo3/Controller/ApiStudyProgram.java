@@ -1,5 +1,6 @@
 package com.example.demo3.Controller;
 
+import com.example.demo3.Model.StudyProgram;
 import com.example.demo3.Model.StudyProgramDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +13,7 @@ public class ApiStudyProgram {
     private static final String BASE_URL = "http://localhost:8080/api";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static List<StudyProgramDTO> getStudyPrograms(String studies) throws IOException {
+    public static List<StudyProgram> getStudyPrograms(String studies) throws IOException {
         if (studies == null || studies.isEmpty()) {
             throw new IllegalArgumentException("Studies parameter is required and cannot be null or empty.");
         }
@@ -31,7 +32,7 @@ public class ApiStudyProgram {
                 String jsonResponse = response.body().string();
                 System.out.println("Response Body: " + jsonResponse); // Logovanje odgovora
 
-                return objectMapper.readValue(jsonResponse, new TypeReference<List<StudyProgramDTO>>() {});
+                return objectMapper.readValue(jsonResponse, new TypeReference<List<StudyProgram>>() {});
             } else {
                 throw new IOException("Unexpected response code: " + response.code());
             }
@@ -45,8 +46,12 @@ public class ApiStudyProgram {
                 json, MediaType.parse("application/json")
         );
 
+        String url = BASE_URL + "/study-programs?name=" + studyProgramDTO.getName() +
+                "&description=" + studyProgramDTO.getDescription() +
+                "&studies=" + studyProgramDTO.getStudies();
+
         Request request = new Request.Builder()
-                .url(BASE_URL + "/study-programs")
+                .url(url)
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())
                 .post(body)
                 .build();

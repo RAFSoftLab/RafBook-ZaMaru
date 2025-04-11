@@ -14,32 +14,17 @@ public class JsonParser {
 
             ObjectMapper objectMapper = new ObjectMapper();
 
-            String[] programNames = {"RI", "RN", "S", "SI"};
-            List<StudyProgramDTO> studyProgramList = new ArrayList<>();
-
-            for (String programName : programNames) {
-                StudyProgramDTO studyProgramDTO = new StudyProgramDTO();
-                studyProgramDTO.setName(programName);
-                studyProgramDTO.setDescription(programName + " racunarskog fakulteta");
-                studyProgramDTO.setCategories(new ArrayList<>());
-
-                try {
-                    String response = ApiStudyProgram.addStudyProgram(studyProgramDTO);
-                    System.out.println("Studijski program kreiran: " + response);
-                    studyProgramList.add(studyProgramDTO);
-                } catch (IOException e) {
-                    System.out.println("Greška pri kreiranju studijskog programa " + programName + ": " + e.getMessage());
-                }
-            }
 
             StudiesDTO studiesDTO = new StudiesDTO();
             studiesDTO.setName("Osnovne akademske studije 2025");
             studiesDTO.setDescription("Osnovne akademske studije 2025 na Racunarskom fakultetu");
-            studiesDTO.setStudyPrograms(studyProgramList);
+            studiesDTO.setStudyPrograms(new ArrayList<>());
+
 
             try {
                 String response = ApiStudies.addStudies(studiesDTO);
                 System.out.println("Studije kreirane: " + response);
+                createStudyPrograms(studiesDTO);
             } catch (IOException e) {
                 System.out.println("Greška pri kreiranju studija: " + e.getMessage());
             }
@@ -78,7 +63,7 @@ public class JsonParser {
                     String categoryName = subjectNode.get("name").asText();
                     String categoryDescription = "Kategorija " + categoryName;
                     String studyProgram=subjectNode.get("studyProgram").asText();
-                    String studies="OSNOVNE AKADEMSKE STUDIJE";
+                    String studies="Osnovne akademske studije";
 
                     System.out.println("Kategorija kreirana: " + categoryName + " - " + categoryDescription);
                     boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription,studyProgram,studies);
@@ -145,6 +130,23 @@ public class JsonParser {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void createStudyPrograms(StudiesDTO studiesDTO) {
+        String[] programNames = {"RN", "RI", "S", "SI"};
+        for (String programName : programNames) {
+            StudyProgramDTO studyProgramDTO = new StudyProgramDTO();
+            studyProgramDTO.setName(programName);
+            studyProgramDTO.setDescription(programName + " na rafu");
+            studyProgramDTO.setStudies(studiesDTO.getName());
+
+            try {
+                String response = ApiStudyProgram.addStudyProgram(studyProgramDTO);
+                System.out.println("Studijski program " + programName + " kreiran: " + response);
+            } catch (IOException e) {
+                System.out.println("Greška pri kreiranju studijskog programa " + programName + ": " + e.getMessage());
+            }
         }
     }
 

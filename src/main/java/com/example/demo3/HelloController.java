@@ -3,32 +3,16 @@ package com.example.demo3;
 import com.example.demo3.Controller.*;
 import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
-import com.example.demo3.view.ChannelView;
-import com.example.demo3.view.View;
-import javafx.application.Platform;
-import javafx.collections.transformation.FilteredList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import static com.example.demo3.Controller.ApiClientCategory.getCategories;
 import static com.example.demo3.Controller.ApiClientUser.*;
 
 public class HelloController {
@@ -544,7 +528,7 @@ public class HelloController {
     }
 
     private List<StudiesDTO> studiesList = new ArrayList<>();
-    private List<StudyProgramDTO> studyProgramsList = new ArrayList<>();
+    private List<StudyProgram> studyProgramsList = new ArrayList<>();
     private List<NewCategoryDTO> categoriesList = new ArrayList<>();
 
 

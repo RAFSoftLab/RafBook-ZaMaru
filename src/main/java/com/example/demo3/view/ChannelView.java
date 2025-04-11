@@ -5,7 +5,6 @@ import com.example.demo3.Controller.ApiStudyProgram;
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,14 +17,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demo3.Controller.ApiChannel.editChannel;
-import static com.example.demo3.Controller.ApiClientCategory.getCategories;
 import static com.example.demo3.Controller.ApiChannel.getChannels;
 
 public class ChannelView {
@@ -162,18 +158,18 @@ public class ChannelView {
 
                 if (newValue != null) {
                     try {
-                        List<StudyProgramDTO> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
+                        List<StudyProgram> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
                         System.out.println("Selected study: " + newValue);
                         System.out.println(studyPrograms);
 
                         List<String> programNames = studyPrograms.stream()
-                                .map(StudyProgramDTO::getName)
+                                .map(StudyProgram::getName)
                                 .collect(Collectors.toList());
                         comboBox5.getItems().addAll(programNames);
 
                         comboBox5.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
                             if (newValue1 != null) {
-                                StudyProgramDTO selectedProgram = studyPrograms.stream()
+                                StudyProgram selectedProgram = studyPrograms.stream()
                                         .filter(program -> program.getDescription().equals(newValue1))
                                         .findFirst()
                                         .orElse(null);
@@ -236,12 +232,12 @@ public class ChannelView {
 
                 if (newValue != null) {
                     try {
-                        List<StudyProgramDTO> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
+                        List<StudyProgram> studyPrograms = ApiStudyProgram.getStudyPrograms(newValue);
                         System.out.println("Selected study: " + newValue);
                         System.out.println(studyPrograms);
 
                         List<String> programNames = studyPrograms.stream()
-                                .map(StudyProgramDTO::getName)
+                                .map(StudyProgram::getName)
                                 .collect(Collectors.toList());
                         comboBox2.getItems().addAll(programNames);
                         System.out.println("Selected study program: " + comboBox2.getValue());
@@ -250,7 +246,7 @@ public class ChannelView {
                             comboBox3.getItems().clear();
 
                             if (newValue1 != null) {
-                                StudyProgramDTO selectedProgram = studyPrograms.stream()
+                                StudyProgram selectedProgram = studyPrograms.stream()
                                         .filter(program -> program.getName().equals(newValue1))
                                         .findFirst()
                                         .orElse(null);

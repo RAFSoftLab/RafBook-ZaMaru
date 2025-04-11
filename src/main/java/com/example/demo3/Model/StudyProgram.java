@@ -2,13 +2,11 @@ package com.example.demo3.Model;
 
 import java.util.List;
 
-public class StudiesDTO {
+public class StudyProgram {
     private int id;
     private String name;
     private String description;
-    private List<StudyProgram> studyPrograms;
-
-
+    private List<NewCategoryDTO> categories;
 
     public int getId() {
         return id;
@@ -34,11 +32,15 @@ public class StudiesDTO {
         this.description = description;
     }
 
-    public List<StudyProgram> getStudyPrograms() {
-        return studyPrograms;
+    public List<NewCategoryDTO> getCategories() {
+        return categories;
     }
 
-    public void setStudyPrograms(List<StudyProgram> studyPrograms) {
-        this.studyPrograms = studyPrograms;
+    public void setCategories(List<NewCategoryDTO> studyPrograms) {
+        this.categories = studyPrograms;
     }
-}
+
+    @Override
+    public String toString() {
+        return getName();
+}}
