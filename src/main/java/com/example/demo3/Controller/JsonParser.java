@@ -1,10 +1,6 @@
 package com.example.demo3.Controller;
 
-import com.example.demo3.Model.NewChannelDTO;
-import com.example.demo3.Model.NewUserDTO;
-import com.example.demo3.Model.NewVoiceChannelDTO;
-import com.example.demo3.Model.Person;
-import com.example.demo3.Model.StudiesDTO;
+import com.example.demo3.Model.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -15,7 +11,39 @@ public class JsonParser {
 
     public static void loadData(String filePath) {
         try {
+
             ObjectMapper objectMapper = new ObjectMapper();
+
+            String[] programNames = {"RI", "RN", "S", "SI"};
+            List<StudyProgramDTO> studyProgramList = new ArrayList<>();
+
+            for (String programName : programNames) {
+                StudyProgramDTO studyProgramDTO = new StudyProgramDTO();
+                studyProgramDTO.setName(programName);
+                studyProgramDTO.setDescription(programName + " racunarskog fakulteta");
+                studyProgramDTO.setCategories(new ArrayList<>());
+
+                try {
+                    String response = ApiStudyProgram.addStudyProgram(studyProgramDTO);
+                    System.out.println("Studijski program kreiran: " + response);
+                    studyProgramList.add(studyProgramDTO);
+                } catch (IOException e) {
+                    System.out.println("Greška pri kreiranju studijskog programa " + programName + ": " + e.getMessage());
+                }
+            }
+
+            StudiesDTO studiesDTO = new StudiesDTO();
+            studiesDTO.setName("Osnovne akademske studije 2025");
+            studiesDTO.setDescription("Osnovne akademske studije 2025 na Racunarskom fakultetu");
+            studiesDTO.setStudyPrograms(studyProgramList);
+
+            try {
+                String response = ApiStudies.addStudies(studiesDTO);
+                System.out.println("Studije kreirane: " + response);
+            } catch (IOException e) {
+                System.out.println("Greška pri kreiranju studija: " + e.getMessage());
+            }
+
             JsonNode root = objectMapper.readTree(new File(filePath));
             List<NewUserDTO> addedUsers = new ArrayList<>();
 
@@ -47,11 +75,10 @@ public class JsonParser {
                 }
 
                 if (subjectNode != null) {
-                    String study = subjectNode.get("study").asText();
                     String categoryName = subjectNode.get("name").asText();
                     String categoryDescription = "Kategorija " + categoryName;
                     String studyProgram=subjectNode.get("studyProgram").asText();
-                    String studies=subjectNode.get("studies").asText();;
+                    String studies="OSNOVNE AKADEMSKE STUDIJE";
 
                     System.out.println("Kategorija kreirana: " + categoryName + " - " + categoryDescription);
                     boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription,studyProgram,studies);
@@ -74,10 +101,6 @@ public class JsonParser {
                             List<String> roles = new ArrayList<>();
                             roles.add(categoryName);
                             newChannel.setRoles(roles);
-
-                            StudiesDTO studiesDTO = new StudiesDTO();
-                            studiesDTO.setName(study);
-                            studiesDTO.setDescription(study + " na rafu");
 
                             boolean successChannel = ApiChannel.addChannel(newChannel);
                             if (successChannel) {

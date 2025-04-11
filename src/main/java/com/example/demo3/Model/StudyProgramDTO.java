@@ -6,7 +6,7 @@ public class StudyProgramDTO {
     private int id;
     private String name;
     private String description;
-    private List<NewCategoryDTO> studyPrograms;
+    private List<NewCategoryDTO> categories;
 
     public int getId() {
         return id;
@@ -33,15 +33,14 @@ public class StudyProgramDTO {
     }
 
     public List<NewCategoryDTO> getCategories() {
-        return studyPrograms;
+        return categories;
     }
 
     public void setCategories(List<NewCategoryDTO> studyPrograms) {
-        this.studyPrograms = studyPrograms;
+        this.categories = studyPrograms;
     }
 
     @Override
     public String toString() {
-        return getName(); // Pretpostavljam da metoda getName() postoji i vraća ime studijskog programa
-    }
-}
+        return getName();
+}}
