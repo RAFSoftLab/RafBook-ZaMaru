@@ -3,23 +3,22 @@ package com.example.demo3.Controller;
 import com.example.demo3.Model.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 public class JsonParser {
 
     public static void loadData(String filePath) {
         try {
-
             ObjectMapper objectMapper = new ObjectMapper();
-
 
             StudiesDTO studiesDTO = new StudiesDTO();
             studiesDTO.setName("Osnovne akademske studije 2025");
             studiesDTO.setDescription("Osnovne akademske studije 2025 na Racunarskom fakultetu");
             studiesDTO.setStudyPrograms(new ArrayList<>());
-
 
             try {
                 String response = ApiStudies.addStudies(studiesDTO);
@@ -62,53 +61,69 @@ public class JsonParser {
                 if (subjectNode != null) {
                     String categoryName = subjectNode.get("name").asText();
                     String categoryDescription = "Kategorija " + categoryName;
-                    String studyProgram=subjectNode.get("studyProgram").asText();
-                    String studies="Osnovne akademske studije";
+                    String studyProgramRaw = subjectNode.get("studyProgram").asText();
+                    String studies = "Osnovne akademske studije 2025";
 
-                    System.out.println("Kategorija kreirana: " + categoryName + " - " + categoryDescription);
-                    boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription,studyProgram,studies);
+                    List<String> validPrograms = List.of("RN", "RI", "S", "SI");
+                    String[] programNames = studyProgramRaw.split("\\s+");
+                    for (String program : programNames) {
+                        if (!validPrograms.contains(program)) {
+                            System.out.println("Nepoznat study program: " + program + " - preskačem dodavanje kategorije.");
+                            continue;
+                        }
 
-                    if (successCategory) {
-                        System.out.println("Uspešno dodata kategorija");
+                        System.out.println("Dodavanje kategorije: " + categoryName + " u studije " + studies + ", program: " + program);
+                        boolean successCategory = ApiClientCategory.addCategory(categoryName, categoryDescription, program, studies);
 
-                        String[] channelNames = {"Archive", "General", "Obavestenja"};
-                        String[] channelDescriptions = {
-                                "Archive channel for " + categoryName,
-                                "General channel for " + categoryName,
-                                "Obavestenja channel for " + categoryName
-                        };
+                        if (successCategory) {
+                            System.out.println("Uspešno dodata kategorija za program " + program);
+                            String[] channelNames = {"Archive", "General", "Obavestenja"};
+                            for (String channelName : channelNames) {
+                                NewChannelDTO newChannel = new NewChannelDTO();
+                                newChannel.setName(channelName);
+                                newChannel.setDescription(channelName + " for " + categoryName);
+                                newChannel.setCategoryName(categoryName);
+                                newChannel.setStudiesName(studies);
+                                newChannel.setStudyProgramName(program);
+                                newChannel.setFolderId("");
+                                List<String> roles = new ArrayList<>();
+                                roles.add(categoryName);
+                                newChannel.setRoles(roles);
 
-                        for (int i = 0; i < channelNames.length; i++) {
-                            NewChannelDTO newChannel = new NewChannelDTO();
-                            newChannel.setName(channelNames[i]);
-                            newChannel.setDescription(channelDescriptions[i]);
-                            newChannel.setCategoryName(categoryName);
-                            List<String> roles = new ArrayList<>();
-                            roles.add(categoryName);
-                            newChannel.setRoles(roles);
-
-                            boolean successChannel = ApiChannel.addChannel(newChannel);
-                            if (successChannel) {
-                                System.out.println("Kanal " + newChannel.getName() + " uspešno dodat u kategoriju " + categoryName);
-                            } else {
-                                System.out.println("Neuspešno dodavanje kanala " + newChannel.getName() + " u kategoriju " + categoryName);
+                                try {
+                                    boolean successChannel = ApiChannel.addChannel(newChannel);
+                                    if (successChannel) {
+                                        System.out.println("Kanal \"" + channelName + "\" uspešno dodat.");
+                                    } else {
+                                        System.out.println("Neuspešno dodavanje kanala \"" + channelName + "\".");
+                                    }
+                                } catch (IOException e) {
+                                    System.out.println("Greška pri dodavanju kanala \"" + channelName + "\": " + e.getMessage());
+                                }
                             }
-                        }
-                        NewVoiceChannelDTO newVoiceChannel = new NewVoiceChannelDTO();
-                        newVoiceChannel.setName("General voice channel for " + categoryName);
-                        newVoiceChannel.setDescription("General voice channel for " + categoryName);
-                        newVoiceChannel.setCategoryName(categoryName);
-                        newVoiceChannel.setStudiesName(studies);
-                        newVoiceChannel.setStudyProgramName(studyProgram);
 
-                        boolean successVoiceChannel = ApiVoiceChannel.addVoiceChannel(newVoiceChannel);
-                        if (successVoiceChannel) {
-                            System.out.println("Voice kanal " + newVoiceChannel.getName() + " uspešno dodat za kategoriju " + categoryName);
+                            NewVoiceChannelDTO newVoiceChannel = new NewVoiceChannelDTO();
+                            newVoiceChannel.setName("General Voice Channel");
+                            newVoiceChannel.setDescription("General Voice Channel for " + categoryName);
+                            newVoiceChannel.setCategoryName(categoryName);
+                            newVoiceChannel.setStudiesName(studies);
+                            newVoiceChannel.setStudyProgramName(program);
+                            newVoiceChannel.setRoles(null);
+
+                            try {
+                                boolean successVoiceChannel = ApiVoiceChannel.addVoiceChannel(newVoiceChannel);
+                                if (successVoiceChannel) {
+                                    System.out.println("Voice kanal \"General Voice Channel for " + categoryName + "\" uspešno dodat.");
+                                } else {
+                                    System.out.println("Neuspešno dodavanje voice kanala.");
+                                }
+                            } catch (IOException e) {
+                                System.out.println("Greška pri dodavanju voice kanala: " + e.getMessage());
+                            }
+
                         } else {
-                            System.out.println("Neuspešno dodavanje voice kanala " + newVoiceChannel.getName() + " za kategoriju " + categoryName);
+                            System.out.println("Neuspešno dodata kategorija za program " + program);
                         }
-                    } else {
-                        System.out.println("Neuspešno dodata kategorija");
                     }
                 }
             }
@@ -125,7 +140,6 @@ public class JsonParser {
                             System.out.println("Dodata rola " + roleName + " korisniku " + user.getEmail());
                         }
                     }
-
                 }
             }
         } catch (IOException e) {

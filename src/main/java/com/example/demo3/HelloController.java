@@ -331,8 +331,8 @@ public class HelloController {
             String description = MainRepository.getInstance().get("description");
             String category = MainRepository.getInstance().get("categoryName");
             String role = MainRepository.getInstance().get("role");
-            String studiesName = MainRepository.getInstance().get("studiesName"); // Ispravljeno
-            String studyProgramName = MainRepository.getInstance().get("studyProgramName"); // Ispravljeno
+            String studiesName = MainRepository.getInstance().get("studiesName");
+            String studyProgramName = MainRepository.getInstance().get("studyProgramName");
 
             NewChannelDTO newChannel = new NewChannelDTO();
             newChannel.setName(name);

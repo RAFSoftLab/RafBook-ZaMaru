@@ -240,19 +240,19 @@ public class ChannelView {
                                 .map(StudyProgram::getName)
                                 .collect(Collectors.toList());
                         comboBox2.getItems().addAll(programNames);
-                        System.out.println("Selected study program: " + comboBox2.getValue());
 
                         comboBox2.valueProperty().addListener((observable1, oldValue1, newValue1) -> {
                             comboBox3.getItems().clear();
 
                             if (newValue1 != null) {
+                                System.out.println("Selected study program: " + newValue1);
+
                                 StudyProgram selectedProgram = studyPrograms.stream()
                                         .filter(program -> program.getName().equals(newValue1))
                                         .findFirst()
                                         .orElse(null);
 
                                 if (selectedProgram != null) {
-
                                     List<String> categoryNames = selectedProgram.getCategories().stream()
                                             .map(NewCategoryDTO::getName)
                                             .collect(Collectors.toList());
