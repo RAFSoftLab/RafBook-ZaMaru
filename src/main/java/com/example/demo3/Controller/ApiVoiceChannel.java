@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ApiVoiceChannel {
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String BASE_URL = "http://localhost:8080/api/voice-channel"; // Endpoint za kanale
+    private static final String BASE_URL = "http://localhost:8080/api/voice-channel";
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static boolean addVoiceChannel(NewVoiceChannelDTO newVoiceChannelDTO) throws IOException {

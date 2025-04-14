@@ -201,8 +201,8 @@ public class UserView {
             if (firstNameField.getText().isEmpty() ||
                     lastNameField.getText().isEmpty() ||
                     usernameField2.getText().isEmpty() ||
-                    emailField.getText().isEmpty() ||
-                    roleField.getText().isEmpty()) {
+                    emailField.getText().isEmpty()
+                   ) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, "Sva polja moraju biti popunjena");
                 alert.show();
                 return;
