@@ -1,12 +1,13 @@
 package com.example.demo3.Controller;
 
 import com.example.demo3.repository.MainRepository;
+import com.example.demo3.util.ConfigReader;
 import okhttp3.*;
 import org.json.JSONObject;
 import java.io.IOException;
 
 public class AuthClient {
-    private static final String BASE_URL = "http://192.168.124.28:1524/api/users/auth/login"; // API URL
+    private static final String BASE_URL = ConfigReader.getApiUrl() + "/users/auth/login"; // API URL
     private static final OkHttpClient client = new OkHttpClient();
     public static String token;
 
@@ -35,13 +36,12 @@ public class AuthClient {
             }
         }
     }
+
     public static String getToken() {
         return token;
     }
 
     public static void setToken(String token) {
-        token = token;
+        AuthClient.token = token;
     }
 }
-
-

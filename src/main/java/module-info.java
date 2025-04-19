@@ -11,8 +11,6 @@ module com.example.demo3 {
 
 
     requires org.testng;
-    requires google.api.services.drive.v3.rev197;
-    requires com.google.auth.oauth2;
     requires com.google.api.client.json.jackson2;
 
 
