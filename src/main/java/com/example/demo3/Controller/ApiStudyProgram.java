@@ -2,6 +2,7 @@ package com.example.demo3.Controller;
 
 import com.example.demo3.Model.StudyProgram;
 import com.example.demo3.Model.StudyProgramDTO;
+import com.example.demo3.util.ConfigReader;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class ApiStudyProgram {
     private static final OkHttpClient client = new OkHttpClient();
-    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final String BASE_URL = ConfigReader.getApiUrl();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static List<StudyProgram> getStudyPrograms(String studies) throws IOException {

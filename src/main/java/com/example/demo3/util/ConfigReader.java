@@ -11,8 +11,7 @@ public class ConfigReader {
         try (InputStream input = ConfigReader.class.getClassLoader().getResourceAsStream("application.properties")) {
             if (input == null) {
                 System.out.println("Sorry, unable to find application.properties");
-                // Umesto return, postavi property na default vrednost ako fajl nije pronađen
-                properties.setProperty("api.url", "http://default-url.com"); // Default URL
+                properties.setProperty("api.url", "http://default-url.com");
             } else {
                 properties.load(input);
             }
