@@ -19,12 +19,11 @@ A **JavaFX-based desktop application** for managing clients. This application al
 - **Spring Boot** (for backend API if applicable)
 - **JDBC / Hibernate / JPA** (for database interaction)
 - **JWT Authentication** (for secure login and access control)
-- **Scene Builder** (optional for building JavaFX UI in a drag-and-drop manner)
-- **Maven / Gradle** (for project dependency management)
+- **Maven** (for project dependency management)
 
 ## Requirements
 - **Java 11+**
-- **Maven / Gradle** (depending on your project build tool)
+- **Maven(depending on your project build tool)
 - **IDE**: IntelliJ IDEA, Eclipse, or any Java IDE
 - **JDK**: JavaFX SDK
 
@@ -72,138 +71,25 @@ A **JavaFX-based desktop application** for managing clients. This application al
 
 ## Running the Application
 
-### 1. **Install Dependencies**
-   If you're using Maven, make sure the required dependencies are in your `pom.xml`. If you're using Gradle, they should be in your `build.gradle`.
+This is a JavaFX desktop application that connects to a backend service, which you can find here:
 
-### 2. **Build the Project**
-   - Using **Maven**:
-     ```bash
-     mvn clean install
-     ```
-   - Using **Gradle**:
-     ```bash
-     gradle build
-     ```
+https://github.com/RAFSoftLab/RafBook-Backend
 
-### 3. **Run the Application**
-   After building the project, run the `Main` class that launches the JavaFX application.
+To run the application locally, follow these steps:
 
-   - If you’re using Maven, you can use:
-     ```bash
-     mvn javafx:run
-     ```
+# 1. Clone the repository
+git clone https://github.com/RAFSoftLab/RafBook-ZaMaru.git
 
-   - If you’re using Gradle, you can use:
-     ```bash
-     gradle run
-     ```
+# 2. Navigate to the project directory
+cd your-repo-name
 
-### 4. **Build for Distribution (Optional)**
-   To package the app for distribution, you can use Maven or Gradle to create a JAR or a platform-specific installer (e.g., `.exe`, `.dmg`).
+# 3.Configure the API URL: In the application.properties file, set the api.url to the desired backend URL (default is http://localhost:8080/api), if you wish to connect to a different environment.
 
-   - **Maven** (for packaging):
-     ```bash
-     mvn package
-     ```
-   - **Gradle**:
-     ```bash
-     gradle build
-     ```
+# 4. Build the project
+mvn clean package
 
-   This will create a JAR file or platform-specific executable that you can distribute.
+# 5. Run the application
+mvn javafx:run
 
----
 
-## Using Git with Forks and Creating Pull Requests
-
-### 1. Forking a Repository
-1. Go to the repository you want to fork on GitHub.
-2. Click the `Fork` button at the top right of the repository page.
-3. This will create a copy of the repository under your GitHub account.
-
-### 2. Cloning the Forked Repository
-1. Navigate to your forked repository on GitHub.
-2. Click the `Code` button and copy the URL.
-3. Open your terminal and run the following command to clone the repository:
-
-```bash
-git clone <your-forked-repo-url>
-```
-
-4. Navigate into the cloned repository:
-
-```bash
-cd <repository-name>
-```
-
-### 3. Setting Up the Upstream Remote
-1. Add the original repository as an upstream remote:
-
-```bash
-git remote add upstream <original-repo-url>
-```
-
-2. Verify the new upstream remote:
-
-```bash
-git remote -v
-```
-
-### 4. Creating a New Branch
-1. Create a new branch for your changes:
-
-```bash
-git checkout -b <new-branch-name>
-```
-
-### 5. Making Changes and Committing
-1. Make your changes to the code.
-2. Stage the changes:
-
-```bash
-git add .
-```
-
-3. Commit the changes:
-
-```bash
-git commit -m "Description of the changes"
-```
-
-### 6. Pushing Changes to Your Fork
-1. Push the changes to your forked repository:
-
-```bash
-git push origin <new-branch-name>
-```
-
-### 7. Creating a Pull Request
-1. Go to your forked repository on GitHub.
-2. Click the `Compare & pull request` button.
-3. Ensure the base repository is the original repository and the base branch is the branch you want to merge into.
-4. Provide a title and description for your pull request.
-5. Click `Create pull request`.
-
-### 8. Keeping Your Fork Updated
-1. Fetch the latest changes from the upstream repository:
-
-```bash
-git fetch upstream
-```
-
-2. Merge the changes into your local branch:
-
-```bash
-git checkout <branch-name>
-git merge upstream/<branch-name>
-```
-
-3. Push the updated branch to your fork:
-
-```bash
-git push origin <branch-name>
-```
-
-This tutorial covers the basic workflow for using Git with forks and creating pull requests.
-
----
+Make sure the backend is up and running before starting the desktop app.
