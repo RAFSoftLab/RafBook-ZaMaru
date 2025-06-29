@@ -74,6 +74,8 @@ public class View {
 
             } catch (IOException ex) {
                 ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Servis nije dostupan. Pokušajte kasnije.");
+                alert.show();
 
             }
 
