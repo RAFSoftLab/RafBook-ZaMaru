@@ -20,6 +20,12 @@ public class ApiChannel {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static List<Channel> getChannels() throws IOException {
+        try {
+            Thread.sleep(6 * 60 * 1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+
+        }
         Request request = new Request.Builder()
                 .url(BASE_URL)
                 .addHeader("Authorization", "Bearer " + AuthClient.getToken())

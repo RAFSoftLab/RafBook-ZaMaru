@@ -5,6 +5,7 @@ import com.example.demo3.Controller.ApiStudyProgram;
 import com.example.demo3.HelloController;
 import com.example.demo3.Model.*;
 import com.example.demo3.repository.MainRepository;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,10 +16,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import java.util.concurrent.CompletableFuture;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static com.example.demo3.Controller.ApiChannel.editChannel;
@@ -36,12 +42,36 @@ public class ChannelView {
         ObservableList<Channel> channelData = FXCollections.observableArrayList();
         FilteredList<Channel> filteredData = new FilteredList<>(channelData, p -> true);
 
-        try {
-            List<Channel> channels = getChannels();
-            channelData.addAll(channels);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Executor executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory());
+
+        CompletableFuture.runAsync(() -> {
+                    try {
+                        List<Channel> channels = getChannels();
+                        Platform.runLater(() -> channelData.addAll(channels));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Greška");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Greška prilikom dohvatanja podataka.");
+                            alert.showAndWait();
+                        });
+                    }
+                }, executor)
+                .orTimeout(5, TimeUnit.MINUTES)
+                .exceptionally(ex -> {
+                    if (ex instanceof TimeoutException) {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setTitle("Upozorenje");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Servis kasni više od 5 minuta.");
+                            alert.showAndWait();
+                        });
+                    }
+                    return null;
+                });
 
         table2.setItems(filteredData);
 

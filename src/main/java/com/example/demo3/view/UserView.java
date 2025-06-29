@@ -6,6 +6,7 @@ import com.example.demo3.HelloController;
 import com.example.demo3.Model.NewUserDTO;
 import com.example.demo3.Model.Person;
 import com.example.demo3.repository.MainRepository;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
+import java.util.concurrent.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -45,12 +47,32 @@ public class UserView {
         userData = FXCollections.observableArrayList();
         filteredData = new FilteredList<>(userData, p -> true);
 
-        try {
-            List<Person> users = getUsers();
-            userData.addAll(users);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Executor executor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual().factory());
+
+        CompletableFuture.runAsync(() -> {
+                    try {
+                        List<Person> users = getUsers();
+                        Platform.runLater(() -> userData.addAll(users));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Platform.runLater(() -> {Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setTitle("Upozorenje");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Servis kasni više od 5 minuta.");
+                            alert.showAndWait();});
+                    }
+                }, executor)
+                .orTimeout(5, TimeUnit.MINUTES)
+                .exceptionally(ex -> {
+                    if (ex instanceof TimeoutException) {
+                        Platform.runLater(() -> {Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setTitle("Upozorenje");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Servis kasni više od 5 minuta.");
+                            alert.showAndWait();});
+                    }
+                    return null;
+                });
 
         table.setItems(filteredData);
 
