@@ -16,6 +16,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import java.io.IOException;
@@ -59,15 +61,26 @@ public class ChannelView {
                         });
                     }
                 }, executor)
-                .orTimeout(5, TimeUnit.MINUTES)
+                .orTimeout(1, TimeUnit.MINUTES)
                 .exceptionally(ex -> {
                     if (ex instanceof TimeoutException) {
                         Platform.runLater(() -> {
                             Alert alert = new Alert(Alert.AlertType.WARNING);
                             alert.setTitle("Upozorenje");
                             alert.setHeaderText(null);
-                            alert.setContentText("Servis kasni više od 5 minuta.");
-                            alert.showAndWait();
+                            alert.setContentText("Došlo je do kašnjenja servisa.");
+
+                            ButtonType exitButton = new ButtonType("Izađi");
+                            ButtonType continueButton = new ButtonType("Nastavi");
+
+                            alert.getButtonTypes().setAll(exitButton, continueButton);
+
+                            Optional<ButtonType> result = alert.showAndWait();
+
+                            if (result.isPresent() && result.get() == exitButton) {
+                                Platform.exit();
+                                System.exit(0);
+                            }
                         });
                     }
                     return null;
